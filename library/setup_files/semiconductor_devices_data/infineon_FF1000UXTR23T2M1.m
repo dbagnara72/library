@@ -1,6 +1,6 @@
 
 %% FF1000UXTR23T2M1 (MOSFET)
-Vth = 4.5;                                              % [V]
+Vth = 4.2;                                              % [V]
 Rds_on = 1.7e-3;                                       % [Ohm]
 Vdon_diode = 4.4;                                         % [V]
 Vgamma = Vdon_diode;                                             % [V]
