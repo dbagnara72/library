@@ -1,7 +1,7 @@
 
 
 %% SKM1700MB20R4S2I4 (MOSFET)
-device_name = 'infineon_SKM1700MB20R4S2I4';
+device_name = 'danfoss_SKM1700MB20R4S2I4';
 
 Vth = 5.5;                                              % [V]
 Rds_on = 1.04e-3;                                       % [Ohm]

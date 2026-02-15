@@ -7,18 +7,24 @@ classdef inverter
         udc_nom       double {mustBePositive} % Nominal DC-link voltage [V]
         fpwm_base     double {mustBePositive} % Base switching frequency [Hz]
         LFi           double {mustBePositive} % Output filter inductace [H]
+        RLFi          double {mustBePositive} % Output filter inductace resistance [Ohm]
+        LFi_cm        double {mustBePositive} % Output filter inductace [H]
+        RLFi_cm       double {mustBePositive} % Output filter inductace resistance [Ohm]
     end
     
     methods
-        function obj = inverter(name, us, is, freq, udc, fpwm, lfi)
-            if nargin > 0 % Se vengono passati argomenti
+        function obj = inverter(name, us, is, freq, udc, fpwm, LFi, RLFi, LFi_cm, RLFi_cm)
+            if nargin > 0
                 obj.name = name;
                 obj.us_nom = us;
                 obj.is_nom = is;
                 obj.f_nom = freq;
                 obj.udc_nom = udc;
                 obj.fpwm_base = fpwm;
-                obj.LFi = lfi;
+                obj.LFi = LFi;
+                obj.RLFi = RLFi;
+                obj.LFi_cm = LFi_cm;
+                obj.RLFi_cm = RLFi_cm;
             end
         end
         

@@ -1,20 +1,28 @@
 classdef afe
     properties
-        name          string
-        us_nom        double {mustBePositive} % Nominal AC-grid voltage [V]
-        is_nom        double {mustBePositive} % Nominal AC-grid current [A]
-        f_nom         double {mustBePositive} % Nominal AC-grid frequency [Hz]
-        udc_nom       double {mustBePositive} % Nominal DC-link voltage [V]
-        fpwm_base     double {mustBePositive} % Base switching frequency [Hz]
-        CFi           double {mustBePositive} % DClink capacitor [F]
-        CFi_1         double {mustBePositive} % DClink capacitor bank 1 [F]
-        CFi_2         double {mustBePositive} % DClink capacitor bank 2 [F]
-        LFu           double {mustBePositive} % Output filter inductace [H]
-        CFu           double {mustBePositive} % Output filter capacitor [F]
+        name            string
+        us_nom          double {mustBePositive} % Nominal AC-grid voltage [V]
+        is_nom          double {mustBePositive} % Nominal AC-grid current [A]
+        f_nom           double {mustBePositive} % Nominal AC-grid frequency [Hz]
+        udc_nom         double {mustBePositive} % Nominal DC-link voltage [V]
+        fpwm_base       double {mustBePositive} % Base switching frequency [Hz]
+        CFi             double {mustBePositive} % DClink capacitor [F]
+        RCFi            double {mustBePositive} % DClink internal resistance [Ohm]
+        CFi1            double {mustBePositive} % DClink capacitor bank 1 [F]
+        RCFi1           double {mustBePositive} % DClink internal resistance [Ohm]
+        CFi2            double {mustBePositive} % DClink capacitor bank 2 [F]
+        RCFi2           double {mustBePositive} % DClink internal resistance [Ohm]
+        LFu             double {mustBePositive} % Output filter inductace [H]
+        RLFu            double {mustBePositive} % Output filter inductace resistance [Ohm]
+        LFu_cm          double {mustBePositive} % Output filter inductace [H]
+        RLFu_cm         double {mustBePositive} % Output filter inductace resistance [Ohm]
+        CFu             double {mustBePositive} % Output filter capacitor [F]
+        RCFu            double {mustBePositive} % Output filter damping resistor [Ohm]
+        Rbrake          double {mustBePositive} % DClink braking resistor [Ohm]
     end
     
     methods
-        function obj = afe(name, us, is, freq, udc, fpwm, cfi, cfi_1, cfi_2, lfu, cfu)
+        function obj = afe(name, us, is, freq, udc, fpwm, CFi, RCFi, CFi1, RCFi1, CFi2, RCFi2, LFu, RLFu, LFu_cm, RLFu_cm, CFu, RCFu, Rbrake)
             if nargin > 0
                 obj.name = name;
                 obj.us_nom = us;
@@ -22,11 +30,19 @@ classdef afe
                 obj.f_nom = freq;
                 obj.udc_nom = udc;
                 obj.fpwm_base = fpwm;
-                obj.CFi = cfi;
-                obj.CFi_1 = cfi_1;
-                obj.CFi_2 = cfi_2;
-                obj.LFu = lfu;
-                obj.CFu = cfu;
+                obj.CFi = CFi;
+                obj.CFi1 = CFi1;
+                obj.CFi2 = CFi2;
+                obj.RCFi = RCFi;
+                obj.RCFi1 = RCFi1;
+                obj.RCFi2 = RCFi2;
+                obj.LFu = LFu;
+                obj.LFu_cm = LFu_cm;
+                obj.RLFu = RLFu;
+                obj.RLFu_cm = RLFu_cm;
+                obj.CFu = CFu;
+                obj.RCFu = RCFu;
+                obj.Rbrake = Rbrake;
             end
         end
         

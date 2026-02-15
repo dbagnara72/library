@@ -1,6 +1,6 @@
 
 %% CLB800M12HM3P (SiC MOSFET - assume Tj = 100 degC)
-device_name = 'infineon_CLB800M12HM3P';
+device_name = 'wolfspeed_CLB800M12HM3P';
 
 Vth = 2.5;                                              % [V]
 Rds_on = 1.7e-3;                                        % [Ohm]

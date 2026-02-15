@@ -1,6 +1,6 @@
 
 %% CAB450M12XM3 (SiC MOSFET - assume Tj = 100 degC)
-device_name = 'infineon_CAB450M12XM3';
+device_name = 'wolfspeed_CAB450M12XM3';
 
 Vth = 2.5;                                              % [V]
 Rds_on = 2.6e-3;                                          % [Ohm]
