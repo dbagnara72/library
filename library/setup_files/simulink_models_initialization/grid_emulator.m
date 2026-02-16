@@ -56,9 +56,9 @@ function grid_emu_data = grid_emulator(nominal_power, application_voltage, vp_xi
     grid_emu_data.k_ff = 1;
     
     %% voltage reference grid emulator
-    if (application690 == 1)
+    if (application690 == application_voltage)
         Igrid_phase_normalization_factor = 270*sqrt(2);
-    elseif (application480 == 1)
+    elseif (application480 == application_voltage)
         Igrid_phase_normalization_factor = 360*sqrt(2);
     else
         Igrid_phase_normalization_factor = 360*sqrt(2);
