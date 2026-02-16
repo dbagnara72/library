@@ -1,4 +1,4 @@
-function inv = device_mosfet_setting_inv(fpwm)
+function inv = device_mosfet_setting_inv(fpwm, udc)
     inv.device_name = evalin('base', 'device_name');
     inv.Vth = evalin('base', 'Vth');                                  % [V]
     inv.Rds_on = evalin('base', 'Rds_on');                            % [V]
@@ -19,7 +19,7 @@ function inv = device_mosfet_setting_inv(fpwm)
     inv.Csnubber = evalin('base', 'Csnubber');                        % [F]
     inv.Rsnubber = evalin('base', 'Rsnubber');                        % [Ohm]
     
-    inv.Csnubber_zvs = (inv.Irr)^2*inv.Lstray_module/(evalin('base', 'Vdc_bez'))^2;
+    inv.Csnubber_zvs = (inv.Irr)^2*inv.Lstray_module/(udc)^2;
     inv.Rsnubber_zvs = 1/(inv.Csnubber_zvs*fpwm)/5;
 end
 

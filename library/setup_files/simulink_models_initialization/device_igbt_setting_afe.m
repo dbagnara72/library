@@ -1,4 +1,4 @@
-function afe = device_igbt_setting_afe(fpwm)
+function afe = device_igbt_setting_afe(fpwm, udc)
     afe.device_name = evalin('base', 'device_name');
     afe.Vth = evalin('base', 'Vth');                                 % [V]
     afe.Vce_sat = evalin('base', 'Vce_sat');                          % [V]
@@ -24,6 +24,6 @@ function afe = device_igbt_setting_afe(fpwm)
     afe.Rsnubber = evalin('base', 'Rsnubber');                        % [Ohm]
     afe.Cies = evalin('base', 'Cies');                                % [F]
     
-    afe.Csnubber_zvs = (afe.Irr)^2*afe.Lstray_module/(evalin('base', 'Vdc_bez'))^2;
+    afe.Csnubber_zvs = (afe.Irr)^2*afe.Lstray_module/(udc)^2;
     afe.Rsnubber_zvs = 1/(afe.Csnubber_zvs*fpwm)/5;
 end

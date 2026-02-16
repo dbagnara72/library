@@ -1,4 +1,4 @@
-function dab = device_mosfet_setting_dab(fpwm)
+function dab = device_mosfet_setting_dab(fpwm, udc)
     dab.device_name = evalin('base', 'device_name');
     dab.Vth = evalin('base', 'Vth');                                  % [V]
     dab.Rds_on = evalin('base', 'Rds_on');                            % [V]
@@ -19,6 +19,6 @@ function dab = device_mosfet_setting_dab(fpwm)
     dab.Csnubber = evalin('base', 'Csnubber');                        % [F]
     dab.Rsnubber = evalin('base', 'Rsnubber');                        % [Ohm]
     
-    dab.Csnubber_zvs = (dab.Irr)^2*dab.Lstray_module/(evalin('base', 'Vdc_bez'))^2;
+    dab.Csnubber_zvs = (dab.Irr)^2*dab.Lstray_module/(udc)^2;
     dab.Rsnubber_zvs = 1/(dab.Csnubber_zvs*fpwm)/5;
 end

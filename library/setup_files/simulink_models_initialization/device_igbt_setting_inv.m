@@ -1,4 +1,4 @@
-function inv = device_igbt_setting_inv(fpwm)
+function inv = device_igbt_setting_inv(fpwm, udc)
     inv.device_name = evalin('base', 'device_name');
     inv.Vth = evalin('base', 'Vth');                                 % [V]
     inv.Vce_sat = evalin('base', 'Vce_sat');                          % [V]
@@ -24,7 +24,7 @@ function inv = device_igbt_setting_inv(fpwm)
     inv.Rsnubber = evalin('base', 'Rsnubber');                        % [Ohm]
     inv.Cies = evalin('base', 'Cies');                                % [F]
     
-    inv.Csnubber_zvs = (inv.Irr)^2*inv.Lstray_module/evalin('base', 'Vdc_bez')^2;
+    inv.Csnubber_zvs = (inv.Irr)^2*inv.Lstray_module/(udc)^2;
     inv.Rsnubber_zvs = 1/(inv.Csnubber_zvs*fpwm)/5;
 end
 
