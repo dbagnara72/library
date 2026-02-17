@@ -31,6 +31,10 @@ Qkalman = ts_inv * [Rs_norm/Lalpha_norm 0 0 0 0 0; 0 Rs_norm/Lbeta_norm 0 0 0 0;
     0 0 0 0 0 1];
 Rkalman = [2 0; 0 2];
 
+k_kalman = 1;
+k_dc = 1e-3;
+k_sw = 1e-3;
+
 
 
 
