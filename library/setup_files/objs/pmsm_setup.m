@@ -1,34 +1,50 @@
 
-%% example
-% psm = pmsm_setup('generic 1500 kW wind generator', 1600e3, 690, 690, 690, 50, 95, 5.6, 10, 1200, 1,0,0,0);
+%% example of application
+% psm = pmsm_setup(name, number_of_systems, pwr_nom, i_nom, rpm_nom, number_poles, eta, Ld, Lq, Jm, h5_percent, h7_percent)
+% psm = pmsm_setup('WindGen', 6, 1600e3, 2062, 17.8, 104, 96, 1.26e-3, 1.04e-3, 900e3, 0, 0);
+% displayInfo(psm);
 
 %% class definition
 classdef pmsm_setup
     properties
         name                string
+        number_of_systems   double {mustBePositive} % Nominal power [W]
         pwr_nom             double {mustBePositive} % Nominal power [W]
-        u_nom               double {mustBePositive} % Transformer nominal secondary side voltage [V]
+        torque_nom          double {mustBePositive} % Transformer nominal secondary side voltage [V]
+        i_nom               double {mustBePositive} % Transformer nominal secondary side voltage [V]
         rpm_nom             double {mustBePositive} % Transformer nominal primary side current [A]
         number_poles        double {mustBePositive} % Transformer nominal primary side voltage [V]
         eta                 double {mustBePositive} % Nominal frequency [Hz]
         Ld                  double {mustBePositive} % Transformer short circuit voltage [%]
         Lq                  double {mustBePositive} % Transformer short circuit voltage [%]
-        Lmu                 double {mustBePositive} % Transformer short circuit voltage [%]
+        Lmu                 double {} % Transformer short circuit voltage [%]
         Jm                  double {mustBePositive} % Transformer short circuit voltage [%]
-        h5_percent_psm      double {mustBePositive} % Nominal pulsation [rad/s]
-        h7_percent_psm      double {mustBePositive} % Nominal pulsation [rad/s]
-        
-        i_nom               double {mustBePositive} % Nominal pulsation [rad/s]
+        h5_percent_psm      double {} % Nominal pulsation [rad/s]
+        h7_percent_psm      double {} % Nominal pulsation [rad/s]
+            
+        Ld_m                double {mustBePositive} % Transformer short circuit voltage [%]
+        Lq_m                double {mustBePositive} % Transformer short circuit voltage [%]
+        Ls_m                double {mustBePositive} % Transformer short circuit voltage [%]
+        Lalpha_m            double {mustBePositive} % Transformer short circuit voltage [%]
+        Lbeta_m             double {mustBePositive} % Transformer short circuit voltage [%]
+        La_m                double {mustBePositive} % Transformer short circuit voltage [%]
+        Lb_m                double {} % Transformer short circuit voltage [%]
+        Rs_m                double {mustBePositive} % Transformer short circuit voltage [%]
+        Jm_m                double {mustBePositive} % Transformer short circuit voltage [%]
+
+        pp                  double {mustBePositive} % Nominal pulsation [rad/s]
+        u_nom               double {mustBePositive} % Nominal pulsation [rad/s]
         ibez                double {mustBePositive} % Nominal pulsation [rad/s]
         ubez                double {mustBePositive} % Transformer efficiency [%]
         freq_bez            double {mustBePositive} % Transformer efficiency [%]
         omega_bez           double {mustBePositive} % Transformer efficiency [%]
         omega_m_bez         double {mustBePositive} % Transformer efficiency [%]
+        tau_bez             double {mustBePositive} % Transformer efficiency [%]
         psi_m               double {mustBePositive} % Transformer short circuit voltage [%]
         psi_bez             double {mustBePositive} % Transformer short circuit voltage [%]
         Rs                  double {mustBePositive} % Transformer short circuit voltage [%]
         La                  double {mustBePositive} % Transformer short circuit voltage [%]
-        Lb                  double {mustBePositive} % Transformer short circuit voltage [%]
+        Lb                  double {} % Transformer short circuit voltage [%]
         Lalpha              double {mustBePositive} % Transformer short circuit voltage [%]
         Lbeta               double {mustBePositive} % Transformer short circuit voltage [%]
         Ls                  double {mustBePositive} % Transformer short circuit voltage [%]
@@ -42,103 +58,83 @@ classdef pmsm_setup
         Lalpha_norm         double {mustBePositive} % Transformer short circuit voltage [%]
         Lbeta_norm          double {mustBePositive} % Transformer short circuit voltage [%]
         La_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-        Lb_norm             double {mustBePositive} % Transformer short circuit voltage [%]
+        Lb_norm             double {} % Transformer short circuit voltage [%]
         psi_m_norm          double {mustBePositive} % Transformer short circuit voltage [%]
         Jm_norm             double {mustBePositive} % Transformer short circuit voltage [%]
+
+        load_friction      double {mustBePositive} % Nominal frequency [Hz]
+        load_friction_m    double {mustBePositive} % Nominal frequency [Hz]
     end
     
-        pwr_nom             double {mustBePositive} % Nominal power [W]
-        u_nom               double {mustBePositive} % Transformer nominal secondary side voltage [V]
-        rpm_nom             double {mustBePositive} % Transformer nominal primary side current [A]
-        number_poles        double {mustBePositive} % Transformer nominal primary side voltage [V]
-        eta                 double {mustBePositive} % Nominal frequency [Hz]
-        Ld                  double {mustBePositive} % Transformer short circuit voltage [%]
-        Lq                  double {mustBePositive} % Transformer short circuit voltage [%]
-        Lmu                 double {mustBePositive} % Transformer short circuit voltage [%]
-        Jm                  double {mustBePositive} % Transformer short circuit voltage [%]
-        h5_percent_psm      double {mustBePositive} % Nominal pulsation [rad/s]
-        h7_percent_psm      double {mustBePositive} % Nominal pulsation [rad/s]
-
     methods
-        function obj = pmsm_setup(name, pwr_nom, u_nom, rpm_nom, number_poles, eta, Ld, Lq, Lmu, Jm, h5_percent, h7_percent)
+        function obj = pmsm_setup(name, number_of_systems, pwr_nom, i_nom, rpm_nom, number_poles, eta, Ld, Lq, Jm, h5_percent, h7_percent)
             if nargin > 0
                 obj.name = name;
+                obj.number_of_systems = number_of_systems;
                 obj.pwr_nom = pwr_nom;
-                obj.u_nom = u_nom;
                 obj.rpm_nom = rpm_nom;
+                obj.omega_m_bez = obj.rpm_nom / 60 *2*pi;
+                obj.torque_nom = obj.pwr_nom/obj.omega_m_bez;
+                obj.i_nom = i_nom;
                 obj.number_poles = number_poles;
-                obj.us_secondary_nom = us2;
-                obj.is_secondary_nom = pwr_nom/sqrt(3)/us2;
-                obj.fgrid_nom = fgrid;
-                obj.ucc = ucc;
                 obj.eta = eta;
-                obj.i1m = i1m;
-                obj.n12 = us1/us2;
+                obj.Ld = Ld;
+                obj.Lq = Lq;
+                obj.Jm = Jm;
+                obj.h5_percent_psm = h5_percent;
+                obj.h7_percent_psm = h7_percent;
 
-                obj.omega_grid_nom = fgrid * 2*pi;
+                obj.Lmu = 5e-6;
+                obj.Rs = (obj.pwr_nom / 3) * (1 - obj.eta/100) / (obj.i_nom)^2;       
+                obj.Rs_m = obj.Rs * obj.number_of_systems;       
+                obj.La = 1/3*(obj.Lq + obj.Ld);   
+                obj.Lb = 1/3*(obj.Lq - obj.Ld);  
+                obj.Lalpha = (obj.Ld + obj.Lq)/2;   
+                obj.Lbeta = obj.Lalpha;
+                obj.Ls = obj.Lalpha;    
                 
-                obj.Ld1_trafo = 0.5 * (us1*ucc/100/sqrt(3)/obj.is_primary_nom/obj.omega_grid_nom);
-                obj.Rd1_trafo = 0.5 * ((1 - eta/100) * pwr_nom / 3 / obj.is_primary_nom^2); 
-                obj.Lm1_trafo = us1/sqrt(3)/i1m/obj.omega_grid_nom;
-                
-                obj.Ld2_trafo = obj.Ld1_trafo / (obj.n12)^2;
-                obj.Rd2_trafo = obj.Rd1_trafo / (obj.n12)^2;
-                obj.Lm2_trafo = obj.Lm1_trafo / (obj.n12)^2;
-                
-                obj.p_iron = p_iron;
-                obj.Rfe1_trafo = (us1/sqrt(3))^2/(p_iron/3);
-                obj.psi_trafo = obj.Lm1_trafo*obj.i1m*sqrt(2);
+                obj.Ld_m = obj.Ld * obj.number_of_systems;     
+                obj.Lq_m = obj.Lq * obj.number_of_systems;     
+                obj.Ls_m = obj.Ls * obj.number_of_systems;     
+                obj.Lalpha_m = obj.Lalpha * obj.number_of_systems;     
+                obj.Lbeta_m = obj.Lbeta * obj.number_of_systems;     
+                obj.La_m = obj.La * obj.number_of_systems;     
+                obj.Lb_m = obj.Lb * obj.number_of_systems;     
+                obj.Jm_m = obj.Jm / obj.number_of_systems;    
 
-                obj.u1bez =  obj.us_primary_nom * sqrt(2/3);
-                obj.i1bez =  obj.is_primary_nom * sqrt(2);
-                obj.u1bez =  obj.us_secondary_nom * sqrt(2/3);
-                obj.i1bez =  obj.is_secondary_nom * sqrt(2);
+                obj.pp = obj.number_poles/2;
+                obj.ibez = obj.i_nom / obj.number_of_systems * sqrt(2);
+                obj.tau_bez = obj.torque_nom / obj.number_of_systems;
+                obj.psi_m = obj.torque_nom /obj.number_of_systems / (3/2*obj.pp*obj.ibez);
+                obj.psi_bez = obj.psi_m;
+                obj.omega_bez = obj.omega_m_bez * obj.pp;         
+                obj.freq_bez = obj.omega_bez / (2*pi);             
+                obj.ubez = obj.psi_bez * obj.omega_bez;
+                obj.u_nom = obj.ubez / sqrt(2/3);
 
-                obj.kp_vgrid = 10;
-                obj.ki_vgrid = 45;
-                obj.k_ff = 1;
-                obj.ugrid_factor = 1;
+                obj.Xbez = obj.ubez / obj.ibez;      
+                obj.Lbez =  obj.Xbez / obj.omega_bez;    
+                obj.Rs_norm = obj.Rs_m / obj.Xbez;
+                obj.Ld_norm = obj.Ld_m / obj.Lbez;
+                obj.Lq_norm = obj.Lq_m / obj.Lbez;
+                obj.Ls_norm = obj.Ls_m / obj.Lbez;
+                obj.Lalpha_norm = obj.Lalpha_m / obj.Lbez;
+                obj.Lbeta_norm = obj.Lbeta_m / obj.Lbez;
+                obj.La_norm = obj.La_m / obj.Lbez;
+                obj.Lb_norm = obj.Lb_m / obj.Lbez;
+                obj.psi_m_norm = obj.psi_m / obj.psi_bez;
+                obj.Jm_norm = 1/2*obj.Jm*obj.omega_m_bez/obj.torque_nom; 
 
-                obj.up_xi_pu_ref = up_xi_pu_ref;
-                obj.up_eta_pu_ref = up_eta_pu_ref;
-                obj.un_xi_pu_ref = un_xi_pu_ref;
-                obj.un_eta_pu_ref = un_eta_pu_ref;
-
-                %% voltage reference grid emulator
-                if (application_voltage == 690)
-                    obj.igrid_bez = 270*sqrt(2);
-                    obj.ugrid_bez = 690*sqrt(2/3);
-                    obj.udc_nom = 1070;
-                elseif (application_voltage == 480)
-                    obj.igrid_bez = 360*sqrt(2);
-                    obj.ugrid_bez = 480*sqrt(2/3);
-                    obj.udc_nom = 750;
-                else
-                    obj.igrid_bez = 360*sqrt(2);
-                    obj.ugrid_bez = 400*sqrt(2/3);
-                    obj.udc_nom = 680;
-                end
-                
-                if (application_voltage == 690)
-                    obj.Vemu_ref = 690/sqrt(3) * obj.ugrid_factor;
-                    obj.Vemu_ref_norm = obj.Vemu_ref * sqrt(2) / obj.ugrid_bez;
-                elseif (application_voltage == 480)
-                    obj.Vemu_ref = 480/sqrt(3) * obj.ugrid_factor;
-                    obj.Vemu_ref_norm = obj.Vemu_ref * sqrt(2) / obj.ugrid_bez;
-                else
-                    obj.Vemu_ref = 400/sqrt(3) * obj.ugrid_factor;
-                    obj.Vemu_ref_norm = obj.Vemu_ref * sqrt(2) / obj.ugrid_bez;
-                end
-                
-
+                obj.load_friction = obj.torque_nom / obj.omega_m_bez;
+                obj.load_friction_m = obj.load_friction / obj.number_of_systems;
             end
         end
         
         function displayInfo(obj)
-            fprintf('Three phase grid emulator with transformer parameters derivation: %s\n', obj.name);
-            fprintf('Nominal Voltage: %d V | Nominal Current: %d A\n', obj.us_secondary_nom, obj.is_secondary_nom);
-            fprintf('Current Normalization Data: %.2f A\n', obj.igrid_bez);
-            fprintf('Voltage Normalization Data: %.2f V\n', obj.ugrid_bez);
+            fprintf('Permanent Magnet Synchronous Machine: %s\n', obj.name);
+            fprintf('PSM Normalization Voltage Factor: %.1f V | PSM Normalization Current Factor: %.1f A\n', obj.ubez, obj.ibez);
+            fprintf('Per-System Direct Axis Inductance: %.5f H\n', obj.Ld_m);
+            fprintf('Per-System Quadrature Axis Inductance: %.5f H\n', obj.Lq_m);
             fprintf('---------------------------\n');
         end
     end
