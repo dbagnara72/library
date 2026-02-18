@@ -1,69 +1,79 @@
 
 %% example of application
-% psm = pmsm_setup(name, number_of_systems, pwr_nom, i_nom, rpm_nom, number_poles, eta, Ld, Lq, Jm, h5_percent, h7_percent)
-% psm = pmsm_setup('WindGen', 6, 1600e3, 2062, 17.8, 104, 96, 1.26e-3, 1.04e-3, 900e3, 0, 0);
+% psm = pmsm_setup(name, pwr_nom, i_nom, rpm_nom, number_poles, eta, Ld, Lq, Jm, h5_percent, h7_percent)
+% psm = pmsm_setup('WindGen', 250e3, 2062, 17.8, 104, 96, 1.26e-3, 1.04e-3, 900e3, 0, 0);
 % displayInfo(psm);
+
+%% notation
+% in three phase system nominal voltage means phase to phase rms;
+% in three phase system nominal current means phase rms;
+% terms with bez suffix mean quantity used for normalization;
+% quantities with suffix bez mean peak per phase;
+% quantities with alpha/beta means quantities seen respect a stationary
+% reference frame;
+% quantities with dq means quantities seen respect the synchonous rotating
+% reference frame;
 
 %% class definition
 classdef pmsm_setup
     properties
-        name                string
-        number_of_systems   double {mustBePositive} % Nominal power [W]
+        name                string % Name of the machine
+        number_of_systems   double {mustBePositive} % Number of galvanically insulated three phase systems
         pwr_nom             double {mustBePositive} % Nominal power [W]
-        torque_nom          double {mustBePositive} % Transformer nominal secondary side voltage [V]
-        i_nom               double {mustBePositive} % Transformer nominal secondary side voltage [V]
-        rpm_nom             double {mustBePositive} % Transformer nominal primary side current [A]
-        number_poles        double {mustBePositive} % Transformer nominal primary side voltage [V]
-        eta                 double {mustBePositive} % Nominal frequency [Hz]
-        Ld                  double {mustBePositive} % Transformer short circuit voltage [%]
-        Lq                  double {mustBePositive} % Transformer short circuit voltage [%]
-        Lmu                 double {} % Transformer short circuit voltage [%]
-        Jm                  double {mustBePositive} % Transformer short circuit voltage [%]
-        h5_percent_psm      double {} % Nominal pulsation [rad/s]
-        h7_percent_psm      double {} % Nominal pulsation [rad/s]
+        torque_nom          double {mustBePositive} % Nominal torque [Nm]
+        i_nom               double {mustBePositive} % Nominal current [A]
+        rpm_nom             double {mustBePositive} % Nominal rpm [min^-1]
+        number_poles        double {mustBePositive} % Number of poles
+        eta                 double {mustBePositive} % Efficiency in percent [%]
+        Ld                  double {mustBePositive} % Direct axis machine inductance [H]
+        Lq                  double {mustBePositive} % Quadrature axis machine inductance [H]
+        Lmu                 double {} % Leakage inductance used in the machine inductance matrix to be invertible, in general set to 5uH [H]
+        Jm                  double {mustBePositive} % Load inertia: both machine rotor plus load inertia [kgm^2]
+        h5_percent_psm      double {} % Firth flux harmonic in percent [%]
+        h7_percent_psm      double {} % seventh flux harmonic in percent [%]
             
-        Ld_m                double {mustBePositive} % Transformer short circuit voltage [%]
-        Lq_m                double {mustBePositive} % Transformer short circuit voltage [%]
-        Ls_m                double {mustBePositive} % Transformer short circuit voltage [%]
-        Lalpha_m            double {mustBePositive} % Transformer short circuit voltage [%]
-        Lbeta_m             double {mustBePositive} % Transformer short circuit voltage [%]
-        La_m                double {mustBePositive} % Transformer short circuit voltage [%]
-        Lb_m                double {} % Transformer short circuit voltage [%]
-        Rs_m                double {mustBePositive} % Transformer short circuit voltage [%]
-        Jm_m                double {mustBePositive} % Transformer short circuit voltage [%]
+        Ld_m                double {mustBePositive} % Equivalent per system of the direct axis inductance [H]
+        Lq_m                double {mustBePositive} % Equivalent per system of the quadrature axis machine inductance [H]
+        Ls_m                double {mustBePositive} % Equivalent per system of the synchonous inductance [H]
+        Lalpha_m            double {mustBePositive} % Equivalent per system of the alpha inductance [H]
+        Lbeta_m             double {mustBePositive} % Equivalent per system of the beta inductance [H]
+        La_m                double {mustBePositive} % Equivalent per system of the self inductance term [H]
+        Lb_m                double {} % Equivalent per system of the mutual inductance term [H]
+        Rs_m                double {mustBePositive} % Equivalent per system of the phase resistance [Ohm]
+        Jm_m                double {mustBePositive} % Equivalent per system of the load intertia [kgm^2]
 
-        pp                  double {mustBePositive} % Nominal pulsation [rad/s]
-        u_nom               double {mustBePositive} % Nominal pulsation [rad/s]
-        ibez                double {mustBePositive} % Nominal pulsation [rad/s]
-        ubez                double {mustBePositive} % Transformer efficiency [%]
-        freq_bez            double {mustBePositive} % Transformer efficiency [%]
-        omega_bez           double {mustBePositive} % Transformer efficiency [%]
-        omega_m_bez         double {mustBePositive} % Transformer efficiency [%]
-        tau_bez             double {mustBePositive} % Transformer efficiency [%]
-        psi_m               double {mustBePositive} % Transformer short circuit voltage [%]
-        psi_bez             double {mustBePositive} % Transformer short circuit voltage [%]
-        Rs                  double {mustBePositive} % Transformer short circuit voltage [%]
-        La                  double {mustBePositive} % Transformer short circuit voltage [%]
-        Lb                  double {} % Transformer short circuit voltage [%]
-        Lalpha              double {mustBePositive} % Transformer short circuit voltage [%]
-        Lbeta               double {mustBePositive} % Transformer short circuit voltage [%]
-        Ls                  double {mustBePositive} % Transformer short circuit voltage [%]
+        pp                  double {mustBePositive} % Number of pole pairs
+        u_nom               double {mustBePositive} % Nominal voltage [V]
+        ibez                double {mustBePositive} % Normalization current factor (per system) [A]
+        ubez                double {mustBePositive} % Normalization voltage factor [V]
+        freq_bez            double {mustBePositive} % Normalization electrical frequency factor [Hz]
+        omega_bez           double {mustBePositive} % Normalization electrical pulsation factor [rad/s]
+        omega_m_bez         double {mustBePositive} % Normalization mechanical pulsation factor [rad/s]
+        tau_bez             double {mustBePositive} % Normalization torque factor (per system) [Nm]
+        psi_m               double {mustBePositive} % Magnet flux [Vs]
+        psi_bez             double {mustBePositive} % Normalization flux factor [Vs]
+        Rs                  double {mustBePositive} % Machine phase resistance [Ohm]
+        La                  double {mustBePositive} % Machine self inductance term [H]
+        Lb                  double {} % Machine mutual inductance term [H]
+        Lalpha              double {mustBePositive} % Machine alpha inductance [H]
+        Lbeta               double {mustBePositive} % Machine beta inductance [H]
+        Ls                  double {mustBePositive} % Machine synchronous inductance [H]
 
-        Xbez                double {mustBePositive} % Transformer short circuit voltage [%]
-        Lbez                double {mustBePositive} % Transformer short circuit voltage [%]
-        Rs_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-        Ld_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-        Lq_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-        Ls_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-        Lalpha_norm         double {mustBePositive} % Transformer short circuit voltage [%]
-        Lbeta_norm          double {mustBePositive} % Transformer short circuit voltage [%]
-        La_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-        Lb_norm             double {} % Transformer short circuit voltage [%]
-        psi_m_norm          double {mustBePositive} % Transformer short circuit voltage [%]
-        Jm_norm             double {mustBePositive} % Transformer short circuit voltage [%]
+        Xbez                double {mustBePositive} % Normalization impedance factor (per system) [Ohm]
+        Lbez                double {mustBePositive} % Normalization inductance factor (per system) [H]
+        Rs_norm             double {mustBePositive} % Equivalent per system normalized phase resistance [pu]
+        Ld_norm             double {mustBePositive} % Equivalent per system normalized direct inductance [pu]
+        Lq_norm             double {mustBePositive} % Equivalent per system normalized quadrature inductance [pu]
+        Ls_norm             double {mustBePositive} % Equivalent per system normalized synchronous inductance [pu]
+        Lalpha_norm         double {mustBePositive} % Equivalent per system normalized alpha inductance [pu]
+        Lbeta_norm          double {mustBePositive} % Equivalent per system normalized beta inductance [pu]
+        La_norm             double {mustBePositive} % Equivalent per system normalized self inductance term [pu]
+        Lb_norm             double {} % Equivalent per system normalized mutual inductance term [pu]
+        psi_m_norm          double {mustBePositive} % Normalized flux [pu]
+        Jm_norm             double {mustBePositive} % Normalized load inertia [pu]
 
-        load_friction      double {mustBePositive} % Nominal frequency [Hz]
-        load_friction_m    double {mustBePositive} % Nominal frequency [Hz]
+        load_friction      double {mustBePositive} % Load friction [Hz]
+        load_friction_m    double {mustBePositive} % Equivalent per system load friction [Hz]
     end
     
     methods

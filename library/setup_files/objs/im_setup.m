@@ -1,113 +1,191 @@
 
 %% example of application
-% im = im_setup(name, pwr_nom, i_nom, rpm_nom, number_poles, eta, Ld, Lq, Jm, h5_percent, h7_percent)
-% im = im_setup('WindGen', 1600e3, 2062, 17.8, 104, 96, 1.26e-3, 1.04e-3, 900e3, 0, 0);
-% displayInfo(psm);
+
+% pwr_nom = 250e3;
+% u_nom = 400;
+% i_nom = 432;
+% freq_nom = 50;
+% rpm_load = 992;
+% number_poles = 6;
+% eta = 0.95;
+% cosphi = 0.88;
+% Rs = 2e-3;
+% u_no_load = u_nom;
+% i_no_load = 135;
+% f_no_load = freq_nom;
+% u_cc = u_nom;
+% i_cc = 3084;
+% f_cc = freq_nom;
+% Jm = 40;
+% load_friction_factor = 0.3;
+% im = im_setup('GM355L6-250kW', pwr_nom, u_nom, i_nom, freq_nom, rpm_load, number_poles, eta, cosphi, ...
+%                         Rs, u_no_load, i_no_load, f_no_load, u_cc, i_cc, f_cc, Jm, load_friction_factor);
+% displayInfo(im);
 
 %% class definition
 classdef im_setup
     properties
-        name                string
-        pwr_nom             double {mustBePositive} % Nominal power [W]
-        u_nom               double {mustBePositive} % Nominal voltage [V]
-        i_nom               double {mustBePositive} % Nominal current [A]
-        freq_nom            double {mustBePositive} % Nominal frequency [Hz]
-        rpm_load            double {mustBePositive} % Load rpm [rpm]
-        number_poles        double {mustBePositive} % Number of poles
-        eta                 double {mustBePositive} % Efficiency [%]
-        cosphi              double {mustBePositive} % cosphi [pu]
-        u_noload            double {mustBePositive} % No load current [A]
-        i_noload            double {mustBePositive} % No load current [A]
-        f_noload            double {mustBePositive} % No load current [A]
-        u_cc                double {mustBePositive} % Transformer short circuit voltage [%]
-        i_cc                double {mustBePositive} % Transformer short circuit voltage [%]
-        f_cc                double {mustBePositive} % Transformer short circuit voltage [%]
-        Jm                  double {mustBePositive} % Transformer short circuit voltage [%]
-        load_friction       double {mustBePositive} % Transformer short circuit voltage [%]
+        name                    string % Name of the machine
+        pwr_nom                 double {mustBePositive} % Nominal power [W]
+        torque_nom              double {mustBePositive} % % Nominal torque [Nm]
+        psi_nom                 double {mustBePositive} % Nominal flux [Vs]
+        u_nom                   double {mustBePositive} % Nominal voltage [V]
+        i_nom                   double {mustBePositive} % Nominal current [A]
+        freq_nom                double {mustBePositive} % Nominal frequency [Hz]
+        rpm_load                double {mustBePositive} % Load rpm [rpm]
+        slip_nom                double {mustBePositive} % Nominal slip [pu]
+        number_poles            double {mustBePositive} % Number of poles
+        eta                     double {mustBePositive} % Efficiency [pu]
+        cosphi                  double {mustBePositive} % cosphi [pu]
+        Rs                      double {mustBePositive} % Machine phase resistance [Ohm]
+        u_no_load               double {mustBePositive} % Voltage used for the no load test [V]
+        i_no_load               double {mustBePositive} % No load test current [A]
+        f_no_load               double {mustBePositive} % No load test frequency [Hz]
+        rpm_no_load             double {mustBePositive} % Machine rpm at no load at nominal frequency [A]
+        u_cc                    double {mustBePositive} % Voltage used for the rotor locked test [V]
+        i_cc                    double {mustBePositive} % Rotor locked test current [A]
+        f_cc                    double {mustBePositive} % Rotor locked test frequency [Hz]
+        Jm                      double {mustBePositive} % Machine load intertia [kgm^2]
+        load_friction_factor    double {mustBePositive} % Machine load friction factor [pu]
 
-        torque_nom          double {mustBePositive} % Transformer short circuit voltage [%]
+        Ls          double {mustBePositive} % Stator inductace Ls = Lm + Lds [H]
+        Lds         double {mustBePositive} % Stator leakage inductace [H]
+        Lm          double {mustBePositive} % Machine magnetization inductance [H]
+        Lr          double {mustBePositive} % Rotor inductace Lr = Lm + Ldr [H]
+        Ldr         double {mustBePositive} % Rotor leakage inductace [H]
+        Rr          double {mustBePositive} % Rotor resistance [Ohm]
+        pp          double {mustBePositive} % Number of pole pairs
         
-           
-        Xbez                double {mustBePositive} % Transformer short circuit voltage [%]
-        Lbez                double {mustBePositive} % Transformer short circuit voltage [%]
-        Rs_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-        Ls_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-        Lm_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-        Lr_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-        Rr_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-        Jm_norm             double {mustBePositive} % Transformer short circuit voltage [%]
-
+        tau_bez         double {mustBePositive} % Normalization torque factor [Nm]
+        psi_bez         double {mustBePositive} % Normalization flux factor [Vs]
+        ibez            double {mustBePositive} % Normalization current factor [A]
+        im_bez          double {mustBePositive} % Normalization magnetization current factor [A]
+        ubez            double {mustBePositive} % Normalization voltage factor [V]
+        omega_bez       double {mustBePositive} % Normalization electrical pulsation factor [rad/s]
+        omega_m_bez     double {mustBePositive} % Normalization mechanical pulsation factor [rad/s]
+        omega_m_load    double {mustBePositive} % Nominal load pulsation [rad/s]
+        
+        Xbez       double {mustBePositive} % Normalization impedance factor (per system) [Ohm]
+        Lbez       double {mustBePositive} % Normalization inductance factor (per system) [H]
+        Rs_norm    double {mustBePositive} % Normalized stator resistance [pu]
+        Ls_norm    double {mustBePositive} % Normalized stator inductance [pu]
+        Lm_norm    double {mustBePositive} % Normalized magnetization inductance [pu]
+        Lr_norm    double {mustBePositive} % Normalized rotor inductance [pu]
+        Rr_norm    double {mustBePositive} % Normalized rotor resistace [pu]
+        psi_norm    double {mustBePositive} % Normalized flux [pu]
+        Jm_norm    double {mustBePositive} % Normalized load inertia [pu]
     end
     
     methods
-        function obj = pmsm_setup(name, number_of_systems, pwr_nom, i_nom, rpm_nom, number_poles, eta, Ld, Lq, Jm, h5_percent, h7_percent)
+        function obj = im_setup(name, pwr_nom, u_nom, i_nom, freq_nom, rpm_load, number_poles, eta, cosphi, ...
+                        Rs, u_no_load, i_no_load, f_no_load, u_cc, i_cc, f_cc, Jm, load_friction_factor)
             if nargin > 0
                 obj.name = name;
-                obj.number_of_systems = number_of_systems;
                 obj.pwr_nom = pwr_nom;
-                obj.rpm_nom = rpm_nom;
-                obj.omega_m_bez = obj.rpm_nom / 60 *2*pi;
-                obj.torque_nom = obj.pwr_nom/obj.omega_m_bez;
+                obj.u_nom = u_nom;
                 obj.i_nom = i_nom;
+                obj.freq_nom = freq_nom;
+                obj.rpm_load = rpm_load;
                 obj.number_poles = number_poles;
                 obj.eta = eta;
-                obj.Ld = Ld;
-                obj.Lq = Lq;
+                obj.cosphi = cosphi;
+                obj.Rs = Rs;
+                obj.u_no_load = u_no_load;
+                obj.i_no_load = i_no_load;
+                obj.f_no_load = f_no_load;
+                obj.u_cc = u_cc;
+                obj.i_cc = i_cc;
+                obj.f_cc = f_cc;
                 obj.Jm = Jm;
-                obj.h5_percent_psm = h5_percent;
-                obj.h7_percent_psm = h7_percent;
+                obj.load_friction_factor = load_friction_factor;
+                obj.pp = obj.number_poles / 2;
 
-                obj.Lmu = 5e-6;
-                obj.Rs = (obj.pwr_nom / 3) * (1 - obj.eta/100) / (obj.i_nom)^2;       
-                obj.Rs_m = obj.Rs * obj.number_of_systems;       
-                obj.La = 1/3*(obj.Lq + obj.Ld);   
-                obj.Lb = 1/3*(obj.Lq - obj.Ld);  
-                obj.Lalpha = (obj.Ld + obj.Lq)/2;   
-                obj.Lbeta = obj.Lalpha;
-                obj.Ls = obj.Lalpha;    
-                
-                obj.Ld_m = obj.Ld * obj.number_of_systems;     
-                obj.Lq_m = obj.Lq * obj.number_of_systems;     
-                obj.Ls_m = obj.Ls * obj.number_of_systems;     
-                obj.Lalpha_m = obj.Lalpha * obj.number_of_systems;     
-                obj.Lbeta_m = obj.Lbeta * obj.number_of_systems;     
-                obj.La_m = obj.La * obj.number_of_systems;     
-                obj.Lb_m = obj.Lb * obj.number_of_systems;     
-                obj.Jm_m = obj.Jm / obj.number_of_systems;    
+                obj.omega_bez = obj.freq_nom * 2*pi;
+                obj.omega_m_bez = obj.omega_bez / obj.pp;
+                obj.omega_m_load = obj.rpm_load / 60 * 2*pi;
+                obj.rpm_no_load = obj.freq_nom * 60 / obj.pp;
+                obj.slip_nom = (obj.rpm_no_load - obj.rpm_load) / obj.rpm_no_load;
+                obj.torque_nom = obj.pwr_nom/obj.eta/obj.omega_m_bez;
 
-                obj.pp = obj.number_poles/2;
-                obj.ibez = obj.i_nom / obj.number_of_systems * sqrt(2);
-                obj.tau_bez = obj.torque_nom / obj.number_of_systems;
-                obj.psi_m = obj.torque_nom /obj.number_of_systems / (3/2*obj.pp*obj.ibez);
-                obj.psi_bez = obj.psi_m;
-                obj.omega_bez = obj.omega_m_bez * obj.pp;         
-                obj.freq_bez = obj.omega_bez / (2*pi);             
-                obj.ubez = obj.psi_bez * obj.omega_bez;
-                obj.u_nom = obj.ubez / sqrt(2/3);
+                obj.Rr = Rs;
+                obj = im_parameter_calculation(obj);  
+                obj = optimizeRotorResistor(obj, obj.Rs/5, obj.Rs/100, obj.Rs*5, 0.05);
+                obj = im_normalization(obj);  
 
-                obj.Xbez = obj.ubez / obj.ibez;      
-                obj.Lbez =  obj.Xbez / obj.omega_bez;    
-                obj.Rs_norm = obj.Rs_m / obj.Xbez;
-                obj.Ld_norm = obj.Ld_m / obj.Lbez;
-                obj.Lq_norm = obj.Lq_m / obj.Lbez;
-                obj.Ls_norm = obj.Ls_m / obj.Lbez;
-                obj.Lalpha_norm = obj.Lalpha_m / obj.Lbez;
-                obj.Lbeta_norm = obj.Lbeta_m / obj.Lbez;
-                obj.La_norm = obj.La_m / obj.Lbez;
-                obj.Lb_norm = obj.Lb_m / obj.Lbez;
-                obj.psi_m_norm = obj.psi_m / obj.psi_bez;
-                obj.Jm_norm = 1/2*obj.Jm*obj.omega_m_bez/obj.torque_nom; 
-
-                obj.load_friction = obj.torque_nom / obj.omega_m_bez;
-                obj.load_friction_m = obj.load_friction / obj.number_of_systems;
             end
         end
         
+        function obj = optimizeRotorResistor(obj, Rr_start, deltaRr, Rr_max, toll)
+            Rr_temp = Rr_start;
+            Tn = obj.torque_nom / 2; 
+            T_min = obj.torque_nom * (1 - toll);
+            T_max = obj.torque_nom * (1 + toll);
+            while (Rr_temp < Rr_max)
+                
+                a = obj.omega_bez * obj.Lm * Rr_temp / obj.slip_nom;
+                b = obj.omega_bez * obj.Lm * a;
+                c = (Rr_temp / obj.slip_nom)^2 + (obj.omega_bez * obj.Lr)^2;
+                d = (Rr_temp / obj.slip_nom)^2 + obj.omega_bez^2 * obj.Ldr * obj.Lr;
+                e = obj.omega_bez^2 * obj.Lm * obj.Lr;
+             
+                ZssRe = obj.Rs + b/c;
+                ZssIm = obj.omega_bez * obj.Lds + obj.omega_bez * obj.Lm * d/c;
+                Zss_abs2 = ZssRe^2 + ZssIm^2;
+                
+                Is_ssRe = obj.u_nom/sqrt(3) * ZssRe / Zss_abs2;
+                Is_ssIm = -obj.u_nom/sqrt(3) * ZssIm / Zss_abs2;
+                
+                Ir_ssRe = (a * Is_ssIm - e * Is_ssRe) / c;
+                Ir_ssIm = -(a * Is_ssRe + e * Is_ssIm) / c;
+
+                Ir_ss_abs2 = Ir_ssRe^2 + Ir_ssIm^2;
+                Pmech = 3 * Ir_ss_abs2 * Rr_temp * (1 - obj.slip_nom) / obj.slip_nom;
+                Tn = Pmech / obj.omega_m_load;
+                
+                if (Tn >= T_min && Tn <= T_max)
+                    break; 
+                end
+                
+                Rr_temp = Rr_temp + deltaRr;
+            end
+            obj.Rr = Rr_temp;
+            obj.tau_bez = Tn;
+        end
+
+        function obj = im_parameter_calculation(obj)
+            obj.Ls = obj.u_no_load/sqrt(3)/obj.i_no_load/(2*pi*obj.f_no_load);
+
+            Zsigma = (obj.u_cc/sqrt(3))/obj.i_cc;
+            Lsigma = sqrt(Zsigma^2-(obj.Rs + obj.Rr)^2)/(2*pi*obj.f_cc);
+            obj.Lds = Lsigma/2;
+            obj.Ldr = Lsigma - obj.Lds;
+            obj.Lm = obj.Ls - obj.Lds;
+            obj.Lr = obj.Lm + obj.Ldr;
+            obj.psi_nom = obj.i_no_load * sqrt(2) * obj.Lm;            
+            obj.psi_bez = obj.psi_nom;            
+        end
+
+        function obj = im_normalization(obj)
+
+            obj.ubez = obj.u_nom / sqrt(3/2);      
+            obj.ibez = obj.i_nom * sqrt(2);      
+            obj.im_bez = obj.i_no_load * sqrt(2);      
+            obj.Xbez = obj.ubez / obj.ibez;      
+            obj.Lbez =  obj.Xbez / obj.omega_bez;    
+            obj.Rs_norm = obj.Rs / obj.Xbez;
+            obj.Ls_norm = obj.Ls / obj.Lbez;
+            obj.Lr_norm = obj.Lr / obj.Lbez;
+            obj.Lm_norm = obj.Lm / obj.Lbez;
+            obj.psi_norm = obj.psi_nom / obj.psi_bez;
+            obj.Jm_norm = 1/2*obj.Jm*obj.omega_m_bez/obj.torque_nom; 
+
+        end
+
         function displayInfo(obj)
-            fprintf('Permanent Magnet Synchronous Machine: %s\n', obj.name);
-            fprintf('PSM Normalization Voltage Factor: %.1f V | PSM Normalization Current Factor: %.1f A\n', obj.ubez, obj.ibez);
-            fprintf('Per-System Direct Axis Inductance: %.5f H\n', obj.Ld_m);
-            fprintf('Per-System Quadrature Axis Inductance: %.5f H\n', obj.Lq_m);
+            fprintf('Induction Machine: %s\n', obj.name);
+            fprintf('IM Normalization Voltage Factor: %.1f V | IM Normalization Current Factor: %.1f A\n', obj.ubez, obj.ibez);
+            fprintf('Rotor Resistance: %.5f Ohm\n', obj.Rr);
+            fprintf('Magnetization Inductance: %.5f H\n', obj.Lm);
             fprintf('---------------------------\n');
         end
     end
