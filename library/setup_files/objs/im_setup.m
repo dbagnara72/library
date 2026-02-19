@@ -47,6 +47,7 @@ classdef im_setup
         f_cc                    double {mustBePositive} % Rotor locked test frequency [Hz]
         Jm                      double {mustBePositive} % Machine load intertia [kgm^2]
         load_friction_factor    double {mustBePositive} % Machine load friction factor [pu]
+        load_friction           double {mustBePositive} % Machine load friction [Nms/rad]
 
         Ls          double {mustBePositive} % Stator inductace Ls = Lm + Lds [H]
         Lds         double {mustBePositive} % Stator leakage inductace [H]
@@ -54,6 +55,7 @@ classdef im_setup
         Lr          double {mustBePositive} % Rotor inductace Lr = Lm + Ldr [H]
         Ldr         double {mustBePositive} % Rotor leakage inductace [H]
         Rr          double {mustBePositive} % Rotor resistance [Ohm]
+        alpha       double {mustBePositive} % Alpha Rr/Lr [rad/s]
         pp          double {mustBePositive} % Number of pole pairs
         
         tau_bez         double {mustBePositive} % Normalization torque factor [Nm]
@@ -65,15 +67,16 @@ classdef im_setup
         omega_m_bez     double {mustBePositive} % Normalization mechanical pulsation factor [rad/s]
         omega_m_load    double {mustBePositive} % Nominal load pulsation [rad/s]
         
-        Xbez       double {mustBePositive} % Normalization impedance factor (per system) [Ohm]
-        Lbez       double {mustBePositive} % Normalization inductance factor (per system) [H]
-        Rs_norm    double {mustBePositive} % Normalized stator resistance [pu]
-        Ls_norm    double {mustBePositive} % Normalized stator inductance [pu]
-        Lm_norm    double {mustBePositive} % Normalized magnetization inductance [pu]
-        Lr_norm    double {mustBePositive} % Normalized rotor inductance [pu]
-        Rr_norm    double {mustBePositive} % Normalized rotor resistace [pu]
-        psi_norm    double {mustBePositive} % Normalized flux [pu]
-        Jm_norm    double {mustBePositive} % Normalized load inertia [pu]
+        Xbez            double {mustBePositive} % Normalization impedance factor (per system) [Ohm]
+        Lbez            double {mustBePositive} % Normalization inductance factor (per system) [H]
+        Rs_norm         double {mustBePositive} % Normalized stator resistance [pu]
+        Ls_norm         double {mustBePositive} % Normalized stator inductance [pu]
+        Lm_norm         double {mustBePositive} % Normalized magnetization inductance [pu]
+        Lr_norm         double {mustBePositive} % Normalized rotor inductance [pu]
+        Rr_norm         double {mustBePositive} % Normalized rotor resistace [pu]
+        alpha_norm      double {mustBePositive} % Normalized alpha Rr_nom/Lr_norm [pu]
+        psi_norm        double {mustBePositive} % Normalized flux [pu]
+        Jm_norm         double {mustBePositive} % Normalized load inertia [pu]
     end
     
     methods
@@ -110,8 +113,10 @@ classdef im_setup
                 obj.Rr = Rs;
                 obj = im_parameter_calculation(obj);  
                 obj = optimizeRotorResistor(obj, obj.Rs/5, obj.Rs/100, obj.Rs*5, 0.05);
+                obj.alpha = obj.Rr / obj.Lr;
                 obj = im_normalization(obj);  
-
+                
+                obj.load_friction =  obj.torque_nom * load_friction_factor / obj.omega_m_bez;
             end
         end
         
@@ -173,9 +178,11 @@ classdef im_setup
             obj.Xbez = obj.ubez / obj.ibez;      
             obj.Lbez =  obj.Xbez / obj.omega_bez;    
             obj.Rs_norm = obj.Rs / obj.Xbez;
+            obj.Rr_norm = obj.Rr / obj.Xbez;
             obj.Ls_norm = obj.Ls / obj.Lbez;
             obj.Lr_norm = obj.Lr / obj.Lbez;
             obj.Lm_norm = obj.Lm / obj.Lbez;
+            obj.alpha_norm = obj.Rr_norm / obj.Lr_norm;
             obj.psi_norm = obj.psi_nom / obj.psi_bez;
             obj.Jm_norm = 1/2*obj.Jm*obj.omega_m_bez/obj.torque_nom; 
 
