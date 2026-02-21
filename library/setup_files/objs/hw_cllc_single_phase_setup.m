@@ -1,4 +1,4 @@
-classdef dab_single_phase
+classdef hw_cllc_single_phase_setup
     properties
         name            string
         pwr_nom         double {mustBePositive} % Nominal power [W]
@@ -56,7 +56,7 @@ classdef dab_single_phase
     end
     
     methods
-        function obj = dab_single_phase(name, pwr, udc1, udc2, uac1, uac2, idc1, idc2, fpwm, fres, ...
+        function obj = hw_cllc_single_phase_setup(name, pwr, udc1, udc2, uac1, uac2, idc1, idc2, fpwm, fres, ...
             n1, n2, Lm, Rfe, Rs1, core_length, core_mur, Cdc_dc1, Cdc1_dc1, Cdc2_dc1, Cdc_dc2, ...
             Cdc1_dc2, Cdc2_dc2, RCdc_dc1, RCdc1_dc1, RCdc2_dc1, RCdc_dc2, RCdc1_dc2, RCdc2_dc2, ...
             Ldc_dc1, Ldc_dc2, RLdc_dc1, RLdc_dc2)
@@ -77,7 +77,7 @@ classdef dab_single_phase
                 obj.Rfe = Rfe;
 
                 n12 = obj.n1/obj.n2;
-                obj.Ls = (obj.udc1_nom^2/obj.fpwm_base/obj.pwr_nom/4/pi);
+                obj.Ls = (obj.udc1_nom^2/(2*pi*obj.fres_base)/obj.pwr_nom*pi/4);
                 obj.Cs = 1/obj.Ls/(2*pi*obj.fres_base)^2;
 
                 obj.Rs1 = Rs1;
@@ -128,7 +128,7 @@ classdef dab_single_phase
         end
         
         function displayInfo(obj)
-            fprintf('Single Phase DAB: %s\n', obj.name);
+            fprintf('Single Phase CLLC: %s\n', obj.name);
             fprintf('Nominal Power: %d [W]\n', obj.pwr_nom);
             fprintf('Normalization Voltage DC1: %d [V] | Normalization Current DC1: %d [A]\n', ...
                 obj.udc1_bez, obj.idc1_bez);

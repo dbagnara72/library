@@ -1,4 +1,4 @@
-classdef inverter_three_phase
+classdef hw_inverter_three_phase_setup
     properties
         name          string
         pwr_nom       double {mustBePositive} % Nominal power [W]
@@ -16,7 +16,7 @@ classdef inverter_three_phase
     end
     
     methods
-        function obj = inverter_three_phase(name, pwr, us, is, freq, udc, fpwm, LFi, RLFi, LFi_cm, RLFi_cm)
+        function obj = hw_inverter_three_phase_setup(name, pwr, us, is, freq, udc, fpwm, LFi, RLFi, LFi_cm, RLFi_cm)
             if nargin > 0
                 obj.name = name;
                 obj.pwr_nom = pwr;

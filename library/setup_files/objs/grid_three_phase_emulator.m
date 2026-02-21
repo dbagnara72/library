@@ -12,21 +12,11 @@ classdef grid_three_phase_emulator
         is_primary_nom      double {mustBePositive} % Transformer nominal primary side current [A]
         us_secondary_nom    double {mustBePositive} % Transformer nominal secondary side voltage [V]
         is_secondary_nom    double {mustBePositive} % Transformer nominal secondary side current [A]
+        n1                  double {mustBePositive} % Transformer nominal secondary side current [A]
+        n2                  double {mustBePositive} % Transformer nominal secondary side current [A]
         fgrid_nom           double {mustBePositive} % Nominal frequency [Hz]
         omega_grid_nom      double {mustBePositive} % Nominal pulsation [rad/s]
-        eta                 double {mustBePositive} % Transformer efficiency [%]
-        ucc                 double {mustBePositive} % Transformer short circuit voltage [%]
-        i1m                 double {mustBePositive} % Transformer primary side magnetization current [A]
-        n12                 double {mustBePositive} % Transformer U1/U2 []
-        Rd1_trafo           double {mustBePositive} % Transformer primary side winding resistance [Ohm]
-        Ld1_trafo           double {mustBePositive} % Transformer primary side leakage inductance [H]
-        Lm1_trafo           double {mustBePositive} % Transformer primary side magnetization inductance [H]
-        Rd2_trafo           double {mustBePositive} % Transformer secondary side winding resistance [Ohm]
-        Ld2_trafo           double {mustBePositive} % Transformer secondary side leakage inductance [H]
-        Lm2_trafo           double {mustBePositive} % Transformer secondary side magnetization inductance [H]
-        p_iron              double {mustBePositive} % Transformer iron losses [W]
-        Rfe1_trafo          double {mustBePositive} % Transformer primary side equivalent iron losses resistance [Ohm]
-        psi_trafo           double {mustBePositive} % Transformer core flux [Vs]
+        trafo
         udc_nom             double {mustBePositive} % Nominal DC-link voltage [V]
 
         i1bez               double {mustBePositive} % Normalization Current Factor primary side transformer [A]
@@ -50,6 +40,7 @@ classdef grid_three_phase_emulator
     end
     
     methods
+
         function obj = grid_three_phase_emulator(name, pwr_nom, application_voltage, us1, us2, fgrid, ...
                 eta, ucc, i1m, p_iron, up_xi_pu_ref, up_eta_pu_ref, un_xi_pu_ref, un_eta_pu_ref)
             if nargin > 0
@@ -61,24 +52,9 @@ classdef grid_three_phase_emulator
                 obj.us_secondary_nom = us2;
                 obj.is_secondary_nom = pwr_nom/sqrt(3)/us2;
                 obj.fgrid_nom = fgrid;
-                obj.ucc = ucc;
-                obj.eta = eta;
-                obj.i1m = i1m;
-                obj.n12 = us1/us2;
-
                 obj.omega_grid_nom = fgrid * 2*pi;
-                
-                obj.Ld1_trafo = 0.5 * (us1*ucc/100/sqrt(3)/obj.is_primary_nom/obj.omega_grid_nom);
-                obj.Rd1_trafo = 0.5 * ((1 - eta/100) * pwr_nom / 3 / obj.is_primary_nom^2); 
-                obj.Lm1_trafo = us1/sqrt(3)/i1m/obj.omega_grid_nom;
-                
-                obj.Ld2_trafo = obj.Ld1_trafo / (obj.n12)^2;
-                obj.Rd2_trafo = obj.Rd1_trafo / (obj.n12)^2;
-                obj.Lm2_trafo = obj.Lm1_trafo / (obj.n12)^2;
-                
-                obj.p_iron = p_iron;
-                obj.Rfe1_trafo = (us1/sqrt(3))^2/(p_iron/3);
-                obj.psi_trafo = obj.Lm1_trafo*obj.i1m*sqrt(2);
+                obj.trafo =  three_phase_transformer_setup(obj.name, obj.pwr_nom, obj.us_primary_nom, ...
+                    obj.us_secondary_nom, obj.fgrid_nom, eta, ucc, i1m, p_iron);
 
                 obj.u1bez =  obj.us_primary_nom * sqrt(2/3);
                 obj.i1bez =  obj.is_primary_nom * sqrt(2);

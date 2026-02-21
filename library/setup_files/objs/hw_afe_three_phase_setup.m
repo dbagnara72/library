@@ -1,4 +1,4 @@
-classdef afe_three_phase
+classdef hw_afe_three_phase_setup
     properties
         name            string
         pwr_nom         double {mustBePositive} % Nominal power [W]
@@ -25,7 +25,7 @@ classdef afe_three_phase
     end
     
     methods
-        function obj = afe_three_phase(name, pwr, us, is, freq, udc, fpwm, CFi, RCFi, CFi1, RCFi1, CFi2, RCFi2, LFu, RLFu, LFu_cm, RLFu_cm, CFu, RCFu, Rbrake)
+        function obj = hw_afe_three_phase_setup(name, pwr, us, is, freq, udc, fpwm, CFi, RCFi, CFi1, RCFi1, CFi2, RCFi2, LFu, RLFu, LFu_cm, RLFu_cm, CFu, RCFu, Rbrake)
             if nargin > 0
                 obj.name = name;
                 obj.pwr_nom = pwr;
