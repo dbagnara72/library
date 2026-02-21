@@ -1,6 +1,6 @@
 
 %% example
-% psm_ctrl = ctrl_pmsm_setup(ts_inv, psm.omega_bez, psm.Jm_norm);
+% psm_ctrl = ctrl_pmsm_setup(ts_inv, psm.omega_bez, u_psm_scale, psm.Jm_norm);
 
 %% class definition
 classdef ctrl_pmsm_setup
@@ -10,7 +10,7 @@ classdef ctrl_pmsm_setup
         Jm_norm               double {mustBePositive} % Per unit representation of the load inertia [pu]
         di_obs                % Double Integrator Observer Object 
         edi_obs               % Extended Double Integrator Observer Object 
-        
+        u_psm_scale
         kp_w                  % Speed control proportional gain  
         ki_w                  % Speed control integral gain  
         iq_lim                % IQ limit [pu] 
@@ -35,13 +35,14 @@ classdef ctrl_pmsm_setup
     
     methods
 
-        function obj = ctrl_pmsm_setup(ts, omega_base, Jm_norm)
+        function obj = ctrl_pmsm_setup(ts, omega_base, u_psm_scale, Jm_norm)
             if nargin > 0
                 obj.ts = ts;
                 obj.omega_base = omega_base;
                 obj.Jm_norm = Jm_norm;
                 obj.di_obs = double_integrator_observer(obj);
                 obj.edi_obs = extended_double_integrator_observer(obj);
+                obj.u_psm_scale = u_psm_scale;
 
                 obj.kp_w = 2.5;
                 obj.ki_w = 18;
@@ -73,21 +74,21 @@ classdef ctrl_pmsm_setup
                 out.Cso = [1 0];
                 p2place = [-1 -4]*obj.omega_base;
                 p2placed = exp(p2place*obj.ts);
-                Kd = (acker(out.Asod',out.Cso',p2placed))';
-            out.komega = Kd(2) / obj.ts;
-            out.ktheta = Kd(1) / obj.ts;
+                out.Ldso = (acker(out.Asod',out.Cso',p2placed))';
+            out.komega = out.Ldso(2) / obj.ts;
+            out.ktheta = out.Ldso(1) / obj.ts;
         end
 
         function out = extended_double_integrator_observer(obj)
-                out.A = [0 1 0; 0 0 -1/obj.Jm_norm; 0 0 0];
-                out.Ad_edio = eye(3) + out.A * obj.ts;
+                out.A_edio = [0 1 0; 0 0 -1/obj.Jm_norm; 0 0 0];
+                out.Ad_edio = eye(3) + out.A_edio * obj.ts;
                 out.Bd_edio = [0; obj.ts/obj.Jm_norm; 0];
                 out.Cedio = [1 0 0];
                 p3place = exp([-1 -2 -4] * obj.omega_base * obj.ts);
-                Klo = (acker(out.Ad_edio',out.Cedio',p3place))';
-                out.l1 = Klo(1);
-                out.l2 = Klo(2);
-                out.l3 = Klo(3);
+                out.Ldeso = (acker(out.Ad_edio',out.Cedio',p3place))';
+                out.l1 = out.Ldeso(1);
+                out.l2 = out.Ldeso(2);
+                out.l3 = out.Ldeso(3);
         end
 
 

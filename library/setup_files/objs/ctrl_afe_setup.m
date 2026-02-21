@@ -9,7 +9,8 @@ classdef ctrl_afe_setup
         ts                      double {mustBePositive} % Samping time [s]
         omega_base              double {mustBePositive} % Base pulsation [s]
         omega_diobs             double {mustBePositive} % Double Integrator Observer - base pulsation [s]
-        diobj                   % Double Integrator Observer Object 
+        di_obs                   % Double Integrator Observer Object 
+        vr_obs                   % Double Integrator Observer Object 
         fht_grid                % First harmonic Tracker Object for Grid application 
         fht_load                % First harmonic Tracker Object for Load application 
         res_pi                  % Resonant PI Object for grid current control 
@@ -64,7 +65,8 @@ classdef ctrl_afe_setup
                 obj.ts = ts;
                 obj.omega_base = omega_base;
                 obj.omega_diobs = obj.omega_base;
-                obj.diobj = double_integrator_observer(obj);
+                obj.di_obs = double_integrator_observer(obj);
+                obj.vr_obs = voltage_rate_observer(obj);
                 obj.fht_grid = first_harmonic_tracker(obj);
                 obj.fht_load = first_harmonic_tracker(obj);
                 obj.res_pi = resonant_pi(obj);
@@ -122,15 +124,26 @@ classdef ctrl_afe_setup
         
         function out = double_integrator_observer(obj)
                 out.Aso = [0 1; 0 0];
-                out.Asod = eye(2) + out.Aso*obj.ts;
+                out.Adso = eye(2) + out.Aso*obj.ts;
                 out.Cso = [1 0];
                 p2place = [-1 -4]*obj.omega_diobs;
                 p2placed = exp(p2place*obj.ts);
-                Kd = (acker(out.Asod',out.Cso',p2placed))';
-            out.komega = Kd(2) / obj.ts;
-            out.ktheta = Kd(1) / obj.ts;
+                out.Ldso = (acker(out.Adso',out.Cso',p2placed))';
+            out.komega = out.Ldso(2) / obj.ts;
+            out.ktheta = out.Ldso(1) / obj.ts;
         end
-        
+
+        function out = voltage_rate_observer(obj)
+                out.Aso = [0 1; 0 0];
+                out.Adso = eye(2) + out.Aso*obj.ts;
+                out.Cso = [1 0];
+                p2place = [-0.1 -0.4]*obj.omega_diobs;
+                p2placed = exp(p2place*obj.ts);
+                out.Ldso = (acker(out.Adso',out.Cso',p2placed))';
+            out.kv = out.Ldso(2) / obj.ts;
+            out.kx = out.Ldso(1) / obj.ts;
+        end
+
         function out = first_harmonic_tracker(obj)
                 out.omega_fht = obj.omega_base;
                 out.delta_fht = 0.05;
