@@ -64,8 +64,8 @@ classdef ekf_pmsm_setup
                 obj.Rkalman = [2 0; 0 2];
                 
                 obj.k_kalman = 1;
-                obj.k_dc = 1e-3;
-                obj.k_sw = 1e-3;
+                obj.k_dc = 0;
+                obj.k_sw = 0;
             end
         end
     end
