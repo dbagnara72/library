@@ -1,62 +1,86 @@
 
 %% example
-
+% psm_ctrl = ctrl_pmsm_setup(ts_inv, psm.omega_bez, psm.Jm_norm);
 
 %% class definition
 classdef ctrl_pmsm_setup
     properties
-        ts                      double {mustBePositive} % Samping time [s]
-        omega_base              double {mustBePositive} % Base pulsation [s]
+        ts                    double {mustBePositive} % Samping time [s]
+        omega_base            double {mustBePositive} % Base pulsation [rad/s]
+        Jm_norm               double {mustBePositive} % Per unit representation of the load inertia [pu]
+        di_obs                % Double Integrator Observer Object 
+        edi_obs               % Extended Double Integrator Observer Object 
+        
+        kp_w                  % Speed control proportional gain  
+        ki_w                  % Speed control integral gain  
+        iq_lim                % IQ limit [pu] 
+        id_lim                % ID limit [pu]
+        kp_i                  % Current control proportional gain
+        ki_i                  % Current control integral gain
+        kp_id                 % Current control proportional gain
+        ki_id                 % Current control integral gain
+        kp_iq                 % Current control proportional gain
+        ki_iq                 % Current control integral gain
+        kp_inv_d              % Current control proportional gain
+        ki_inv_d              % Current control integral gain
+        kp_inv_q              % Current control proportional gain
+        ki_inv_q              % Current control integral gain
+                
+        kp_fw                 % Voltage control proportional gain
+        ki_fw                 % Voltge control integral gain  
+        emf_fb_p              % Schroedl gain
+        emf_p                 % Schroedl gain
+        omega_th              % Omega min encoder 
     end
     
     methods
 
-        function obj = ctrl_setup(name, pwr_nom, u1_nom, u2_nom, f_nom, eta, ucc, i1m, p_iron)
+        function obj = ctrl_pmsm_setup(ts, omega_base, Jm_norm)
             if nargin > 0
-                obj.name = name;
-                obj.pwr_nom = pwr_nom;
-                obj.u1_nom = u1_nom;
-                obj.i1_nom = obj.pwr_nom/sqrt(3)/obj.u1_nom;
-                obj.u2_nom = u2_nom;
-                obj.i2_nom = obj.pwr_nom/sqrt(3)/obj.u2_nom;
-                obj.f_nom = f_nom;
-                obj.ucc = ucc;
-                obj.eta = eta;
-                obj.i1m = i1m;
-                obj.n12 = obj.u1_nom/obj.u2_nom;
+                obj.ts = ts;
+                obj.omega_base = omega_base;
+                obj.Jm_norm = Jm_norm;
+                obj.di_obs = double_integrator_observer(obj);
+                obj.edi_obs = extended_double_integrator_observer(obj);
 
-                obj.n1 = 50*sqrt(3);
-                obj.n2 = 50;
+                obj.kp_w = 2.5;
+                obj.ki_w = 18;
+                obj.iq_lim = 1.4;
+                obj.id_lim = 0.35;
+                obj.kp_i = 0.25;
+                obj.ki_i = 18;
+                obj.kp_id = obj.kp_i;
+                obj.ki_id = obj.ki_i;
+                obj.kp_iq = obj.kp_i;
+                obj.ki_iq = obj.ki_i;
+                obj.kp_inv_d = obj.kp_i;
+                obj.ki_inv_d = obj.ki_i;
+                obj.kp_inv_q = obj.kp_i;
+                obj.ki_inv_q = obj.ki_i;
                 
-                obj.Ld1 = 0.5 * (obj.u1_nom*obj.ucc/100/sqrt(3)/obj.i1_nom/(2*pi*obj.f_nom));
-                obj.Rd1 = 0.5 * ((1 - obj.eta/100) * obj.pwr_nom / 3 / obj.i1_nom^2); 
-                obj.Lm1 = obj.u1_nom/sqrt(3)/obj.i1m/(2*pi*obj.f_nom);
-                
-                obj.Ld2 = obj.Ld1 / (obj.n12)^2;
-                obj.Rd2 = obj.Rd1 / (obj.n12)^2;
-                obj.Lm2 = obj.Lm1 / (obj.n12)^2;
-                
-                obj.p_iron = p_iron;
-                obj.Rfe1 = (obj.u1_nom/sqrt(3))^2/(obj.p_iron/3);
-                obj.psi = obj.Lm1*obj.i1m*sqrt(2);
+                obj.kp_fw = 0.05;
+                obj.ki_fw = 1.8;             
+                obj.emf_fb_p = 0.2;
+                obj.emf_p = obj.emf_fb_p*4/10;     
+                obj.omega_th = 0;
 
             end
         end
         
         function out = double_integrator_observer(obj)
-                Aso = [0 1; 0 0];
-                Asod = eye(2) + Aso*obj.ts;
-                Cso = [1 0];
+                out.Aso = [0 1; 0 0];
+                out.Asod = eye(2) + out.Aso*obj.ts;
+                out.Cso = [1 0];
                 p2place = [-1 -4]*obj.omega_base;
                 p2placed = exp(p2place*obj.ts);
-                Kd = (acker(Asod',Cso',p2placed))';
+                Kd = (acker(out.Asod',out.Cso',p2placed))';
             out.komega = Kd(2) / obj.ts;
             out.ktheta = Kd(1) / obj.ts;
         end
 
         function out = extended_double_integrator_observer(obj)
                 out.A = [0 1 0; 0 0 -1/obj.Jm_norm; 0 0 0];
-                out.Ad_edio = eye(3) + A * obj.ts;
+                out.Ad_edio = eye(3) + out.A * obj.ts;
                 out.Bd_edio = [0; obj.ts/obj.Jm_norm; 0];
                 out.Cedio = [1 0 0];
                 p3place = exp([-1 -2 -4] * obj.omega_base * obj.ts);
@@ -68,42 +92,7 @@ classdef ctrl_pmsm_setup
 
 
 
-id_lim = 0.35;
 
-kp_w = 2.5;
-ki_w = 18;
-iq_lim = 1.4;
-
-kp_i = 0.25;
-ki_i = 18;
-
-kp_id = kp_i;
-ki_id = ki_i;
-kp_iq = kp_i;
-ki_iq = ki_i;
-
-kp_inv_d = kp_i;
-ki_inv_d = ki_i;
-kp_inv_q = kp_i;
-ki_inv_q = ki_i;
-
-
-
-%% Field Weakening Control 
-kp_fw = 0.05;
-ki_fw = 1.8;
-
-%% BEMF observer
-emf_fb_p = 0.2;
-emf_p = emf_fb_p*4/10;
-
-emf_fb_p_ccaller_1 = emf_fb_p;
-emf_p_ccaller_1 = emf_fb_p_ccaller_1*4/10;
-
-emf_fb_p_ccaller_2 = emf_fb_p;
-emf_p_ccaller_2 = emf_fb_p_ccaller_2*4/10;
-% omega_th = 0.25;
-omega_th = 0;
     end
 end
 

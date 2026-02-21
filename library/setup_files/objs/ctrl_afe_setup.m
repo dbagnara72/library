@@ -1,5 +1,6 @@
 
 %% example
+% afe_ctrl = ctrl_afe_setup(ts_inv, grid.omega_nom);
 
 
 %% class definition
@@ -7,7 +8,7 @@ classdef ctrl_afe_setup
     properties
         ts                      double {mustBePositive} % Samping time [s]
         omega_base              double {mustBePositive} % Base pulsation [s]
-        omega_diobs_grid_phase  double {mustBePositive} % Double Integrator Observer - base pulsation [s]
+        omega_diobs             double {mustBePositive} % Double Integrator Observer - base pulsation [s]
         diobj                   % Double Integrator Observer Object 
         fht_grid                % First harmonic Tracker Object for Grid application 
         fht_load                % First harmonic Tracker Object for Load application 
@@ -62,7 +63,7 @@ classdef ctrl_afe_setup
             if nargin > 0
                 obj.ts = ts;
                 obj.omega_base = omega_base;
-
+                obj.omega_diobs = obj.omega_base;
                 obj.diobj = double_integrator_observer(obj);
                 obj.fht_grid = first_harmonic_tracker(obj);
                 obj.fht_load = first_harmonic_tracker(obj);
@@ -120,26 +121,26 @@ classdef ctrl_afe_setup
         end
         
         function out = double_integrator_observer(obj)
-                Aso = [0 1; 0 0];
-                Asod = eye(2) + Aso*obj.ts;
-                Cso = [1 0];
-                p2place = [-1 -4]*obj.omega_base;
+                out.Aso = [0 1; 0 0];
+                out.Asod = eye(2) + out.Aso*obj.ts;
+                out.Cso = [1 0];
+                p2place = [-1 -4]*obj.omega_diobs;
                 p2placed = exp(p2place*obj.ts);
-                Kd = (acker(Asod',Cso',p2placed))';
+                Kd = (acker(out.Asod',out.Cso',p2placed))';
             out.komega = Kd(2) / obj.ts;
             out.ktheta = Kd(1) / obj.ts;
         end
         
         function out = first_harmonic_tracker(obj)
-                omega_fht = obj.omega_base;
-                delta_fht = 0.05;
-                Afht = [0 1; -omega_fht^2 -delta_fht*omega_fht];
-                Cfht = [1 0];
-                poles_fht = [-1 -4] * omega_fht;
-                Ad_fht = eye(2) + Afht * obj.ts;
+                out.omega_fht = obj.omega_base;
+                out.delta_fht = 0.05;
+                out.Afht = [0 1; -out.omega_fht^2 -out.delta_fht*out.omega_fht];
+                out.Cfht = [1 0];
+                poles_fht = [-1 -4] * out.omega_fht;
+                out.Ad_fht = eye(2) + out.Afht * obj.ts;
                 polesd_fht = exp(obj.ts * poles_fht);
-            out.L_fht = acker(Afht',Cfht', poles_fht)';
-            out.Ld_fht = acker(Ad_fht',Cfht', polesd_fht);
+            out.L_fht = acker(out.Afht',out.Cfht', poles_fht)';
+            out.Ld_fht = acker(out.Ad_fht',out.Cfht', polesd_fht);
         end
 
         function out = resonant_pi(obj)
@@ -149,16 +150,16 @@ classdef ctrl_afe_setup
             out.Ares = [0 1; -obj.omega_base^2 -2*out.delta_res*obj.omega_base];
             out.Bres = [0; 1];
             out.Cres = [0 1];
-            out.Aresd = eye(2) + Ares*obj.ts;
+            out.Aresd = eye(2) + out.Ares*obj.ts;
             out.Bresd = out.Bres*obj.ts;
             out.Cresd = out.Cres;
         end
 
         function out = rms_setup(obj)
-            out.rms_perios = 1;
-            out.n1 = 2*pi*rms_perios/obj.omega_base/obj.ts;
-            out.rms_perios = 10;
-            out.n10 = 2*pi*rms_perios/obj.omega_base/obj.ts;
+            rms_perios = 1;
+            out.n1 = 2*pi * rms_perios / obj.omega_base / obj.ts;
+            rms_perios = 10;
+            out.n10 = 2*pi * rms_perios / obj.omega_base / obj.ts;
         end
 
     end

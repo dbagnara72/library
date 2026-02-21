@@ -1,83 +1,87 @@
 
 %% example
-% name = 'Dyn11-690V-690V-1600kW';
-% pwr_nom = 1600e3;
-% u1_nom = 690;
-% u2_nom = 690;
-% f_nom = 50;
-% eta = 98;
-% ucc = 4.6;
-% i1m = 10;
-% p_iron = 10e3;
-% afe_ctrl = ctrl_setup(name, pwr_nom, u1_nom, u2_nom, f_nom, eta, ucc, i1m, p_iron);
+% im_ctrl = ctrl_im_setup(ts_inv, im.omega_bez, im.Jm_norm);
 
 %% class definition
-classdef afe_ctrl_setup
+classdef ctrl_im_setup
     properties
-        name        string
-        pwr_nom     double {mustBePositive} % Nominal power [W]
-        u1_nom      double {mustBePositive} % Transformer nominal primary side voltage [V]
-        i1_nom      double {mustBePositive} % Transformer nominal primary side current [A]
-        u2_nom      double {mustBePositive} % Transformer nominal secondary side voltage [V]
-        i2_nom      double {mustBePositive} % Transformer nominal secondary side current [A]
-        n1          double {mustBePositive} % Transformer nominal secondary side current [A]
-        n2          double {mustBePositive} % Transformer nominal secondary side current [A]
-        f_nom       double {mustBePositive} % Nominal frequency [Hz]
-        eta         double {mustBePositive} % Transformer efficiency [%]
-        ucc         double {mustBePositive} % Transformer short circuit voltage [%]
-        i1m         double {mustBePositive} % Transformer primary side magnetization current [A]
-        n12         double {mustBePositive} % Transformer U1/U2 []
-        Rd1         double {mustBePositive} % Transformer primary side winding resistance [Ohm]
-        Ld1         double {mustBePositive} % Transformer primary side leakage inductance [H]
-        Lm1         double {mustBePositive} % Transformer primary side magnetization inductance [H]
-        Rd2         double {mustBePositive} % Transformer secondary side winding resistance [Ohm]
-        Ld2         double {mustBePositive} % Transformer secondary side leakage inductance [H]
-        Lm2         double {mustBePositive} % Transformer secondary side magnetization inductance [H]
-        p_iron      double {mustBePositive} % Transformer iron losses [W]
-        Rfe1        double {mustBePositive} % Transformer primary side equivalent iron losses resistance [Ohm]
-        psi         double {mustBePositive} % Transformer core flux [Vs]
+        ts                    double {mustBePositive} % Samping time [s]
+        omega_base            double {mustBePositive} % Base pulsation [rad/s]
+        Jm_norm               double {mustBePositive} % Per unit representation of the load inertia [pu]
+        di_obs                % Double Integrator Observer Object 
+        edi_obs               % Extended Double Integrator Observer Object 
+        
+        kp_w                  % Speed control proportional gain  
+        ki_w                  % Speed control integral gain  
+        iq_lim                % IQ limit [pu] 
+        id_lim                % ID limit [pu]
+        kp_i                  % Current control proportional gain
+        ki_i                  % Current control integral gain
+        kp_id                 % Current control proportional gain
+        ki_id                 % Current control integral gain
+        kp_iq                 % Current control proportional gain
+        ki_iq                 % Current control integral gain
+        kp_inv_d              % Current control proportional gain
+        ki_inv_d              % Current control integral gain
+        kp_inv_q              % Current control proportional gain
+        ki_inv_q              % Current control integral gain
+                
     end
     
     methods
 
-        function obj = ctrl_setup(name, pwr_nom, u1_nom, u2_nom, f_nom, eta, ucc, i1m, p_iron)
+        function obj = ctrl_im_setup(ts, omega_base, Jm_norm)
             if nargin > 0
-                obj.name = name;
-                obj.pwr_nom = pwr_nom;
-                obj.u1_nom = u1_nom;
-                obj.i1_nom = obj.pwr_nom/sqrt(3)/obj.u1_nom;
-                obj.u2_nom = u2_nom;
-                obj.i2_nom = obj.pwr_nom/sqrt(3)/obj.u2_nom;
-                obj.f_nom = f_nom;
-                obj.ucc = ucc;
-                obj.eta = eta;
-                obj.i1m = i1m;
-                obj.n12 = obj.u1_nom/obj.u2_nom;
+                obj.ts = ts;
+                obj.omega_base = omega_base;
+                obj.Jm_norm = Jm_norm;
+                obj.di_obs = double_integrator_observer(obj);
+                obj.edi_obs = extended_double_integrator_observer(obj);
 
-                obj.n1 = 50*sqrt(3);
-                obj.n2 = 50;
-                
-                obj.Ld1 = 0.5 * (obj.u1_nom*obj.ucc/100/sqrt(3)/obj.i1_nom/(2*pi*obj.f_nom));
-                obj.Rd1 = 0.5 * ((1 - obj.eta/100) * obj.pwr_nom / 3 / obj.i1_nom^2); 
-                obj.Lm1 = obj.u1_nom/sqrt(3)/obj.i1m/(2*pi*obj.f_nom);
-                
-                obj.Ld2 = obj.Ld1 / (obj.n12)^2;
-                obj.Rd2 = obj.Rd1 / (obj.n12)^2;
-                obj.Lm2 = obj.Lm1 / (obj.n12)^2;
-                
-                obj.p_iron = p_iron;
-                obj.Rfe1 = (obj.u1_nom/sqrt(3))^2/(obj.p_iron/3);
-                obj.psi = obj.Lm1*obj.i1m*sqrt(2);
+                obj.kp_w = 2.5;
+                obj.ki_w = 18;
+                obj.iq_lim = 1.4;
+                obj.id_lim = 0.35;
+                obj.kp_i = 0.25;
+                obj.ki_i = 18;
+                obj.kp_id = obj.kp_i;
+                obj.ki_id = obj.ki_i;
+                obj.kp_iq = obj.kp_i;
+                obj.ki_iq = obj.ki_i;
+                obj.kp_inv_d = obj.kp_i;
+                obj.ki_inv_d = obj.ki_i;
+                obj.kp_inv_q = obj.kp_i;
+                obj.ki_inv_q = obj.ki_i;
 
             end
         end
         
-        function double_integrator_observer(obj)
-            fprintf('Three Phase Transformer Setup: %s\n', obj.name);
-            fprintf('Primary Side Leakage Inductance: %.2f H | Secondary Side Leakage Inductance: %.2f H\n', obj.Ld1, obj.Ld2);
-            fprintf('Primary Side Magnetization Inductance: %.2f H\n', obj.Lm1);
-            fprintf('---------------------------\n');
+        function out = double_integrator_observer(obj)
+                out.Aso = [0 1; 0 0];
+                out.Asod = eye(2) + out.Aso*obj.ts;
+                out.Cso = [1 0];
+                p2place = [-1 -4]*obj.omega_base;
+                p2placed = exp(p2place*obj.ts);
+                Kd = (acker(out.Asod',out.Cso',p2placed))';
+            out.komega = Kd(2) / obj.ts;
+            out.ktheta = Kd(1) / obj.ts;
         end
+
+        function out = extended_double_integrator_observer(obj)
+                out.A = [0 1 0; 0 0 -1/obj.Jm_norm; 0 0 0];
+                out.Ad_edio = eye(3) + out.A * obj.ts;
+                out.Bd_edio = [0; obj.ts/obj.Jm_norm; 0];
+                out.Cedio = [1 0 0];
+                p3place = exp([-1 -2 -4] * obj.omega_base * obj.ts);
+                Klo = (acker(out.Ad_edio',out.Cedio',p3place))';
+                out.l1 = Klo(1);
+                out.l2 = Klo(2);
+                out.l3 = Klo(3);
+        end
+
+
+
+
     end
 end
 

@@ -11,7 +11,7 @@ function three_phase_inverter = three_phase_inverter_hwdata(application_voltage,
     udc = 1070;
     LFi = 230e-6; LFi_cm = 230e-6;
     RLFi = 157*0.05*LFi; RLFi_cm = 157*0.05*LFi_cm;
-    inv690V_250kW = inverter_three_phase('inv690V_250kW', pwr_nom, u_inv_nom, i_inv_nom, i_inv_freq, udc, fpwm_inv, LFi, RLFi, LFi_cm, RLFi_cm);
+    inv690V_250kW = hw_inverter_three_phase_setup('inv690V_250kW', pwr_nom, u_inv_nom, i_inv_nom, i_inv_freq, udc, fpwm_inv, LFi, RLFi, LFi_cm, RLFi_cm);
 
     %% INVERTER 400V - 250kW
     u_inv_nom = 400;
@@ -20,7 +20,7 @@ function three_phase_inverter = three_phase_inverter_hwdata(application_voltage,
     udc = 660;
     LFi = 160e-6; LFi_cm = 160e-6;
     RLFi = 157*0.05*LFi; RLFi_cm = 157*0.05*LFi_cm;
-    inv400V_250kW = inverter_three_phase('inv400V_250kW', pwr_nom, u_inv_nom, i_inv_nom, i_inv_freq, udc, fpwm_inv, LFi, RLFi, LFi_cm, RLFi_cm);
+    inv400V_250kW = hw_inverter_three_phase_setup('inv400V_250kW', pwr_nom, u_inv_nom, i_inv_nom, i_inv_freq, udc, fpwm_inv, LFi, RLFi, LFi_cm, RLFi_cm);
 
     %% INVERTER 480V - 250kW
     u_inv_nom = 400;
@@ -29,7 +29,7 @@ function three_phase_inverter = three_phase_inverter_hwdata(application_voltage,
     udc = 750;
     LFi = 160e-6; LFi_cm = 160e-6;
     RLFi = 157*0.05*LFi; RLFi_cm = 157*0.05*LFi_cm;
-    inv480V_250kW = inverter_three_phase('inv480V_250kW', pwr_nom, u_inv_nom, i_inv_nom, i_inv_freq, udc, fpwm_inv, LFi, RLFi, LFi_cm, RLFi_cm);
+    inv480V_250kW = hw_inverter_three_phase_setup('inv480V_250kW', pwr_nom, u_inv_nom, i_inv_nom, i_inv_freq, udc, fpwm_inv, LFi, RLFi, LFi_cm, RLFi_cm);
 
     %% setup outputs
     if application_voltage == 690

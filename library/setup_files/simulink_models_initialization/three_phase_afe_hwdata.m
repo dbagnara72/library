@@ -17,7 +17,7 @@ function three_phase_afe = three_phase_afe_hwdata(application_voltage, pwr_nom, 
     RCFu = 50e-3;
     Rbrake = 4;
 
-    afe690V_250kW = afe_three_phase('afe690V_250kW', pwr_nom, uafe_nom, iafe_nom, iafe_freq, udc, fpwm_afe, CFi, ...
+    afe690V_250kW = hw_afe_three_phase_setup('afe690V_250kW', pwr_nom, uafe_nom, iafe_nom, iafe_freq, udc, fpwm_afe, CFi, ...
         RCFi, CFi1, RCFi1, CFi2, RCFi2, LFu, RLFu, LFu_cm, RLFu_cm, CFu, RCFu, Rbrake);
 
     %% AFE 400V - 250kW
@@ -33,7 +33,7 @@ function three_phase_afe = three_phase_afe_hwdata(application_voltage, pwr_nom, 
     RCFu = 50e-3;
     Rbrake = 2.5;
 
-    afe400V_250kW = afe_three_phase('afe400V_250kW', pwr_nom, uafe_nom, iafe_nom, iafe_freq, udc, fpwm_afe, CFi, ...
+    afe400V_250kW = hw_afe_three_phase_setup('afe400V_250kW', pwr_nom, uafe_nom, iafe_nom, iafe_freq, udc, fpwm_afe, CFi, ...
         RCFi, CFi1, RCFi1, CFi2, RCFi2, LFu, RLFu, LFu_cm, RLFu_cm, CFu, RCFu, Rbrake);
 
     %% AFE 480V - 250kW
@@ -49,7 +49,7 @@ function three_phase_afe = three_phase_afe_hwdata(application_voltage, pwr_nom, 
     CFu = 360e-6;
     Rbrake = 2.5;
 
-    afe480V_250kW = afe_three_phase('afe480V_250kW', pwr_nom, uafe_nom, iafe_nom, iafe_freq, udc, fpwm_afe, CFi, ...
+    afe480V_250kW = hw_afe_three_phase_setup('afe480V_250kW', pwr_nom, uafe_nom, iafe_nom, iafe_freq, udc, fpwm_afe, CFi, ...
         RCFi, CFi1, RCFi1, CFi2, RCFi2, LFu, RLFu, LFu_cm, RLFu_cm, CFu, RCFu, Rbrake);
 
     %% setup outputs
