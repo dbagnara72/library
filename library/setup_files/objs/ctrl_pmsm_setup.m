@@ -31,6 +31,8 @@ classdef ctrl_pmsm_setup
         emf_fb_p              % Schroedl gain
         emf_p                 % Schroedl gain
         omega_th              % Omega min encoder 
+
+        ekf
     end
     
     methods

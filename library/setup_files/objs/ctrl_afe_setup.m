@@ -80,7 +80,7 @@ classdef ctrl_afe_setup
                 %% PLL DDSRF
                 obj.pll_i1_ddsrt = obj.pll_i1;
                 obj.pll_p_ddsrt = obj.pll_p;
-                obj.tau_ddsrf = 1/obj.omega_base;
+                obj.tau_ddsrf = 2/obj.omega_base;
 
                 %% PLL FHT (First Harmonic Tracker)
                 obj.pll_i1_fht = obj.pll_i1;
