@@ -2,7 +2,7 @@
 
 classdef hw_single_phase_inverter_setup
     properties
-        name            string
+        application_voltage         
         pwr_nom         double {mustBePositive} % Nominal power [W]
         us_nom          double {mustBePositive} % Nominal AC-grid voltage [V]
         is_nom          double {mustBePositive} % Nominal AC-grid current [A]
@@ -30,9 +30,9 @@ classdef hw_single_phase_inverter_setup
     end
     
     methods
-        function obj = hw_single_phase_inverter_setup(name, pwr, us, is, freq, udc, fpwm, CFi, RCFi, CFi1, RCFi1, CFi2, RCFi2, LFu, RLFu, LFu_cm, RLFu_cm, CFu, RCFu, Rbrake)
+        function obj = hw_single_phase_inverter_setup(application_voltage, pwr, us, is, freq, udc, fpwm, CFi, RCFi, CFi1, RCFi1, CFi2, RCFi2, LFu, RLFu, LFu_cm, RLFu_cm, CFu, RCFu, Rbrake)
             if nargin > 0
-                obj.name = name;
+                obj.application_voltage = application_voltage;
                 obj.pwr_nom = pwr;
                 obj.us_nom = us;
                 obj.is_nom = is;
@@ -66,7 +66,7 @@ classdef hw_single_phase_inverter_setup
         end
 
         function displayInfo(obj)
-            fprintf('Device Single Phase Inverter: %s\n', obj.name);
+            fprintf('Device Single Phase Inverter: %d V\n', obj.application_voltage);
             fprintf('Nominal Voltage: %d V | Nominal Current: %d A\n', obj.us_nom, obj.is_nom);
             fprintf('Current Normalization Data: %.2f A\n', obj.ibez);
             fprintf('Voltage Normalization Data: %.2f V\n', obj.ubez);
