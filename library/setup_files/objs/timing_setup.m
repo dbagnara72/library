@@ -11,6 +11,7 @@
 % trgo_cllc = 0; % double update
 % t_measure = 0.6;
 % tc_factor = 100; % tc is ts_afe / tc_factor
+% tc_decimation = 1
 % delay_pwm = 0;
 % dead_time_afe = 0;
 % dead_time_inv = 0;
@@ -18,7 +19,7 @@
 % dead_time_cllc = 2e-6;
 % 
 % glb_time = timing_setup(fpwm_afe, trgo_afe, fpwm_inv, trgo_inv, fpwm_dab, trgo_dab, ...
-%                 fpwm_cllc, trgo_cllc, t_measure, tc_factor, delay_pwm, dead_time_afe, ...
+%                 fpwm_cllc, trgo_cllc, t_measure, tc_factor, tc_decimation, delay_pwm, dead_time_afe, ...
 %                 dead_time_inv, dead_time_dab, dead_time_cllc);
 
 
@@ -42,6 +43,7 @@ classdef timing_setup
         ts_dab
         ts_cllc
         tc
+        decimation_tc
         z_afe
         z_inv
         z_dab
@@ -70,7 +72,7 @@ classdef timing_setup
     
     methods
         function obj = timing_setup(fpwm_afe, trgo_afe, fpwm_inv, trgo_inv, fpwm_dab, trgo_dab, ...
-                fpwm_cllc, trgo_cllc, t_measure, tc_factor, delay_pwm, dead_time_afe, ...
+                fpwm_cllc, trgo_cllc, t_measure, tc_factor, tc_decimation, delay_pwm, dead_time_afe, ...
                 dead_time_inv, dead_time_dab, dead_time_cllc)
             if nargin > 0
                 
@@ -111,6 +113,7 @@ classdef timing_setup
                 end
                                 
                 obj.tc = obj.ts_afe/tc_factor;
+                obj.decimation_tc = tc_decimation;
 
                 obj.z_afe = tf('z',obj.ts_afe);
                 obj.z_inv = tf('z',obj.ts_inv);
@@ -131,7 +134,7 @@ classdef timing_setup
                 obj.delayINV_modB = 2*pi*obj.fPWM_INV*delay_pwm;
                               
                 obj.t_measure = t_measure;
-                obj.Nc = ceil(obj.t_measure/obj.tc);
+                obj.Nc = ceil(obj.t_measure/obj.tc/obj.decimation_tc);
                 obj.Ns_afe = ceil(obj.t_measure/obj.ts_afe);
                 obj.Ns_inv = ceil(obj.t_measure/obj.ts_inv);
                 obj.Ns_dab = ceil(obj.t_measure/obj.ts_dab);

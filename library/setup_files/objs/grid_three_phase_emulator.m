@@ -58,8 +58,8 @@ classdef grid_three_phase_emulator
 
                 obj.u1bez =  obj.us_primary_nom * sqrt(2/3);
                 obj.i1bez =  obj.is_primary_nom * sqrt(2);
-                obj.u1bez =  obj.us_secondary_nom * sqrt(2/3);
-                obj.i1bez =  obj.is_secondary_nom * sqrt(2);
+                obj.u2bez =  obj.us_secondary_nom * sqrt(2/3);
+                obj.i2bez =  obj.is_secondary_nom * sqrt(2);
 
                 obj.kp_vgrid = 10;
                 obj.ki_vgrid = 45;
