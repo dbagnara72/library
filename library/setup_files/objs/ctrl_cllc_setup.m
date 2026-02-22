@@ -4,10 +4,10 @@
 % ki_udc = 18.0;
 % kp_idc = 0.5;
 % ki_idc = 18.0;
-% dab_ctrl = ctrl_dab_setup(kp_udc, ki_udc, kp_idc, ki_idc);
+% cllc_ctrl = ctrl_cllc_setup(kp_udc, ki_udc, kp_idc, ki_idc);
 
 %% class definition
-classdef ctrl_dab_setup
+classdef ctrl_cllc_setup
     properties
         kp_udc
         ki_udc
@@ -17,7 +17,7 @@ classdef ctrl_dab_setup
     
     methods
 
-        function obj = ctrl_dab_setup(kp_udc, ki_udc, kp_idc, ki_idc)
+        function obj = ctrl_cllc_setup(kp_udc, ki_udc, kp_idc, ki_idc)
             if nargin > 0
                 obj.kp_udc = kp_udc;
                 obj.ki_udc = ki_udc;
