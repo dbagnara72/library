@@ -167,7 +167,7 @@ classdef im_setup
             obj.Lm = obj.Ls - obj.Lds;
             obj.Lr = obj.Lm + obj.Ldr;
             obj.psi_nom = obj.i_no_load * sqrt(2) * obj.Lm;            
-            obj.psi_bez = obj.psi_nom;            
+            obj.psi_bez = obj.u_nom / sqrt(3/2) / obj.omega_bez;            
         end
 
         function obj = im_normalization(obj)

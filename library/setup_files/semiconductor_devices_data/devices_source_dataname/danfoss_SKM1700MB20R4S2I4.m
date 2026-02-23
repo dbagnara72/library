@@ -2,6 +2,7 @@
 
 %% SKM1700MB20R4S2I4 (MOSFET)
 device_name = 'danfoss_SKM1700MB20R4S2I4';
+device_type = 'SiC MOSFET';
 
 Vth = 5.5;                                              % [V]
 Rds_on = 1.04e-3;                                       % [Ohm]
@@ -11,7 +12,7 @@ Vgamma = 4;                                             % [V]
 Rdon_diode = 1.85e-3;                                   % [Ohm]
 Eon = 77e-3;                                            % [J] @ Tj = 125°C
 Eoff = 108e-3;                                          % [J] @ Tj = 125°C
-Eerr = 9.7e-3;                                          % [J] @ Tj = 125°C
+Err = 9.7e-3;                                           % [J] @ Tj = 125°C
 Voff_sw_losses = 1300;                                  % [V]
 Ion_sw_losses = 1000;                                   % [A]
 JunctionTermalMass = 1;                                 % [J/K]

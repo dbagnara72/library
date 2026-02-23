@@ -1,4 +1,4 @@
-function data = lithium_ion_battery(nominal_voltage, nominal_power, soc_init, ts)
+function data = lithium_ion_battery_setup(nominal_voltage, nominal_power, soc_init, ts)
 
     data.ubattery = nominal_voltage;
     data.pnom = nominal_power;

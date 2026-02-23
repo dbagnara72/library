@@ -1,14 +1,15 @@
-function ideal_switch = device_ideal_switch_setting(fpwm, udc)
-    ideal_switch.device_name = evalin('base', 'device_name');
-    ideal_switch.Vth = evalin('base', 'Vth');                                  % [V]
-    ideal_switch.Rds_on = evalin('base', 'Rds_on');                            % [Ohm]
-    ideal_switch.Vdon_diode = evalin('base', 'Vdon_diode');                    % [V]
-    ideal_switch.Vgamma = evalin('base', 'Vgamma');                            % [V]
-    ideal_switch.Rdon_diode = evalin('base', 'Rdon_diode');                    % [Ohm]
-    ideal_switch.Csnubber = evalin('base', 'Csnubber');                        % [F]
-    ideal_switch.Rsnubber = evalin('base', 'Rsnubber');                        % [Ohm]
-    ideal_switch.Irr = evalin('base', 'Irr');                                  % [A]
-    Lstray_module = evalin('base', 'Lstray_module');
-    ideal_switch.Csnubber_zvs = (ideal_switch.Irr)^2*Lstray_module/(udc)^2;
+function ideal_switch = device_ideal_switch_setting(device, fpwm, udc)
+run(device);
+    ideal_switch.device_name = device_name;
+    ideal_switch.Vth = Vth;                                  % [V]
+    ideal_switch.Rds_on = Rds_on;                            % [Ohm]
+    ideal_switch.Vdon_diode = Vdon_diode;                    % [V]
+    ideal_switch.Vgamma = Vgamma;                            % [V]
+    ideal_switch.Rdon_diode = Rdon_diode;                    % [Ohm]
+    ideal_switch.Csnubber = Csnubber;                        % [F]
+    ideal_switch.Rsnubber = Rsnubber;                        % [Ohm]
+    ideal_switch.Irr = Irr;                                  % [A]
+    ideal_switch.Lstray_module = Lstray_module;              % [H]
+    ideal_switch.Csnubber_zvs = (ideal_switch.Irr)^2*ideal_switch.Lstray_module/(udc)^2;
     ideal_switch.Rsnubber_zvs = 1/(ideal_switch.Csnubber_zvs*fpwm)/5;
 end
