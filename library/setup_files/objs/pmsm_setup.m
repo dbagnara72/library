@@ -41,7 +41,7 @@ classdef pmsm_setup
         Lb_m                double {} % Equivalent per system of the mutual inductance term [H]
         Rs_m                double {mustBePositive} % Equivalent per system of the phase resistance [Ohm]
         Jm_m                double {mustBePositive} % Equivalent per system of the load intertia [kgm^2]
-
+        radpersecond2rpm
         pp                  double {mustBePositive} % Number of pole pairs
         u_nom               double {mustBePositive} % Nominal voltage [V]
         ibez                double {mustBePositive} % Normalization current factor (per system) [A]
@@ -111,7 +111,7 @@ classdef pmsm_setup
                 obj.La_m = obj.La * obj.number_of_systems;     
                 obj.Lb_m = obj.Lb * obj.number_of_systems;     
                 obj.Jm_m = obj.Jm / obj.number_of_systems;    
-
+                obj.radpersecond2rpm = 60/2/pi;
                 obj.pp = obj.number_poles/2;
                 obj.ibez = obj.i_nom / obj.number_of_systems * sqrt(2);
                 obj.tau_bez = obj.torque_nom / obj.number_of_systems;

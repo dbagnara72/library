@@ -57,7 +57,7 @@ classdef im_setup
         Rr          double {mustBePositive} % Rotor resistance [Ohm]
         alpha       double {mustBePositive} % Alpha Rr/Lr [rad/s]
         pp          double {mustBePositive} % Number of pole pairs
-        
+        radpersecond2rpm
         tau_bez         double {mustBePositive} % Normalization torque factor [Nm]
         psi_bez         double {mustBePositive} % Normalization flux factor [Vs]
         ibez            double {mustBePositive} % Normalization current factor [A]
@@ -102,7 +102,7 @@ classdef im_setup
                 obj.Jm = Jm;
                 obj.load_friction_factor = load_friction_factor;
                 obj.pp = obj.number_poles / 2;
-
+                obj.radpersecond2rpm = 60/2/pi;
                 obj.omega_bez = obj.freq_nom * 2*pi;
                 obj.omega_m_bez = obj.omega_bez / obj.pp;
                 obj.omega_m_load = obj.rpm_load / 60 * 2*pi;
