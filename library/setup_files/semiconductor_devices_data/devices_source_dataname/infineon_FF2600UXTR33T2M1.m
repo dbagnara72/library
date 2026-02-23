@@ -1,6 +1,7 @@
 
 %% FF2600UXTR33T2M1 (MOSFET)
 device_name = 'infineon_FF2600UXTR33T2M1';
+device_type = 'SiC-MOSFET';
 
 Vth = 4.3;                                              % [V]
 Rds_on = 4.9e-3;                                        % [Ohm]
@@ -9,7 +10,7 @@ Vgamma = Vdon_diode;                                    % [V]
 Rdon_diode = 0.85e-3;                                   % [Ohm]
 Eon = 210e-3;                                           % [J] @ Tj = 125°C
 Eoff = 100e-3;                                          % [J] @ Tj = 125°C
-Eerr = 33e-3;                                           % [J] @ Tj = 125°C
+Err = 33e-3;                                           % [J] @ Tj = 125°C
 Voff_sw_losses = 1800;                                  % [V]
 Ion_sw_losses = 750;                                    % [A]
 JunctionTermalMass = 0.2;                               % [J/K]

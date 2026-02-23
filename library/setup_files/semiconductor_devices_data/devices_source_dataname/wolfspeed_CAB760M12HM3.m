@@ -1,6 +1,7 @@
 
 %% CAB760M12HM3 (SiC MOSFET - assume Tj = 100 degC)
 device_name = 'wolfspeed_CAB760M12HM3';
+device_type = 'SiC-MOSFET';
 
 Vth = 2.5;                                              % [V]
 Rds_on = 2e-3;                                          % [Ohm]
@@ -10,7 +11,7 @@ Vgamma = Vdon_diode;                                    % [V]
 Rdon_diode = 0.185e-3;                                  % [Ohm]
 Eon = 21e-3;                                            % [J] @ Tj = 125°C
 Eoff = 18e-3;                                           % [J] @ Tj = 125°C
-Eerr = 3.5e-3;                                          % [J] @ Tj = 125°C
+Err = 3.5e-3;                                          % [J] @ Tj = 125°C
 Voff_sw_losses = 600;                                   % [V]
 Ion_sw_losses = 760;                                    % [A]
 JunctionTermalMass = 0.2;                               % [J/K]

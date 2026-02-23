@@ -2,6 +2,7 @@
 
 %% SKM1400MLI12BM7 (IGBT - 3L NPC) (Tj = 100 degC.)
 device_name = 'danfoss_SKM1400MLI12BM7';
+device_type = 'Si-IGBT';
 
 Vce_sat_25 = 1.55;
 Vce_sat_150 = 1.81;

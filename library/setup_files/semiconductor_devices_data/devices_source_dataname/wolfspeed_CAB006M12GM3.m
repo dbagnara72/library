@@ -1,6 +1,7 @@
 
 %% CAB006A12GM3 (MOSFET) (data at Tj = 100 degC)
 device_name = 'wolfspeed_CAB006A12GM3';
+device_type = 'SiC-MOSFET';
 
 Vth = 2.5;                                              % [V]
 Rds_on = 5.3e-3*1.25;                                   % [Ohm]
@@ -10,7 +11,7 @@ Vgamma = Vdon_diode;                                    % [V]
 Rdon_diode = 0.85e-3;                                   % [Ohm]
 Eon = 5e-3;                                             % [J] @ Tj = 125°C
 Eoff = 0.5e-3;                                          % [J] @ Tj = 125°C
-Eerr = 0.5e-3;                                          % [J] @ Tj = 125°C
+Err = 0.5e-3;                                          % [J] @ Tj = 125°C
 Voff_sw_losses = 600;                                   % [V]
 Ion_sw_losses = 200;                                    % [A]
 JunctionTermalMass = 0.2;                               % [J/K]

@@ -1,6 +1,7 @@
 
 %% FF180R12IE5 (IGBT)
 device_name = 'infineon_FF180R12IE5';
+device_type = 'Si-IGBT';
 
 Vth = 5.5;                                              % [V]
 Rce_on = 0.15e-3;                                       % [Ohm]

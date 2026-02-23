@@ -2,6 +2,7 @@
 
 %% SKM1000GB17E4 (Si-IGBT) - values at Tj = 125°C
 device_name = 'danfoss_SKM1000GB17E4';
+device_type = 'Si-IGBT';
 
 Vth = 5.5;                                              % [V]
 Rce_on = 0.15e-3;                                       % [Ohm]

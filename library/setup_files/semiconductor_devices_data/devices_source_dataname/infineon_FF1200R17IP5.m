@@ -1,6 +1,7 @@
 
 %% FF1200R17IP5 (IGBT)
 device_name = 'infineon_FF1200R17IP5';
+device_type = 'Si-IGBT';
 
 Vth = 5.5;                                              % [V]
 Rce_on = 0.15e-3;                                       % [Ohm]

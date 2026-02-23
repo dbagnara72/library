@@ -2,6 +2,7 @@
 
 %% SEMiX604GB17E4s (IGBT) (Tj = 150 degC.)
 device_name = 'danfoss_SEMiX604GB17E4s';
+device_type = 'Si-IGBT';
 
 Vth = 5.8;                                              % [V]
 Rce_on = 0.15e-3;                                       % [Ohm]

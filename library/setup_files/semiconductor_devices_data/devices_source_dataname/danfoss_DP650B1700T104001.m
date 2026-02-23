@@ -1,6 +1,8 @@
 
 %% DP650B1700T104001 (IGBT)
 device_name = 'danfoss_DP650B1700T104001';
+device_type = 'Si-IGBT';
+
 Vth = 5.8;                                              % [V]
 Rce_on = 0.15e-3;                                       % [Ohm]
 Vce_sat = 2.25;                                         % [V]

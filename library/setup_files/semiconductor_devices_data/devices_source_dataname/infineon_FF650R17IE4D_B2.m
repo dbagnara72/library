@@ -1,6 +1,7 @@
 
 %% FF650R17IE4D_B2 (IGBT)
 device_name = 'infineon_FF650R17IE4D_B2';
+device_type = 'Si-IGBT';
 
 Vth = 5.5;                                              % [V]
 Rce_on = 0.15e-3;                                       % [Ohm]

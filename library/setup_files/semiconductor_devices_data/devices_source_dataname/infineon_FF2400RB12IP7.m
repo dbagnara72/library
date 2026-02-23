@@ -1,6 +1,7 @@
 
 %% FF2400RB12IP7 (IGBT - 3-Level)
 device_name = 'infineon_FF2400RB12IP7';
+device_type = 'Si-IGBT';
 
 Vth = 5.5;                                              % [V]
 Rce_on = 0.15e-3;                                       % [Ohm]

@@ -1,6 +1,7 @@
 
 %% FF1200XTR17T2P5 (IGBT) (Tj = 125 degC)
 device_name = 'infineon_FF1200XTR17T2P5';
+device_type = 'SiC-MOSFET';
 
 Vth = 5.8;                                              % [V]
 Rce_on = 0.15e-3;                                       % [Ohm]
