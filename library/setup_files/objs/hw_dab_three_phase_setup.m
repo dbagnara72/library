@@ -1,4 +1,4 @@
-classdef hw_dab_single_phase_setup
+classdef hw_dab_three_phase_setup
     properties
         name            string
         pwr_nom         double {mustBePositive} % Nominal power [W]
@@ -56,7 +56,7 @@ classdef hw_dab_single_phase_setup
     end
     
     methods
-        function obj = hw_dab_single_phase_setup(name, pwr, udc1, udc2, uac1, uac2, idc1, idc2, fpwm, fres, ...
+        function obj = hw_dab_three_phase_setup(name, pwr, udc1, udc2, uac1, uac2, idc1, idc2, fpwm, fres, ...
             n1, n2, Lm, Rfe, Rs1, core_length, core_mur, Cdc_dc1, Cdc1_dc1, Cdc2_dc1, Cdc_dc2, ...
             Cdc1_dc2, Cdc2_dc2, RCdc_dc1, RCdc1_dc1, RCdc2_dc1, RCdc_dc2, RCdc1_dc2, RCdc2_dc2, ...
             Ldc_dc1, Ldc_dc2, RLdc_dc1, RLdc_dc2)
@@ -77,9 +77,7 @@ classdef hw_dab_single_phase_setup
                 obj.Rfe = Rfe;
 
                 n12 = obj.n1/obj.n2;
-                % obj.Ls = (obj.udc1_nom^2/obj.fpwm_base/obj.pwr_nom/8); 
-                % version with some margin (here preferred)
-                obj.Ls = (obj.udc1_nom^2/obj.fpwm_base/obj.pwr_nom/4/pi);
+                obj.Ls = (obj.udc1_nom^2/obj.fpwm_base/obj.pwr_nom/4);
                 obj.Cs = 1/obj.Ls/(2*pi*obj.fres_base)^2;
 
                 obj.Rs1 = Rs1;

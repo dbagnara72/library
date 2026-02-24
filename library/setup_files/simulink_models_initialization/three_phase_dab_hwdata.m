@@ -1,10 +1,10 @@
-function single_phase_dab = single_phase_dab_hwdata(application_voltage, pwr_nom, fpwm_dab, fres)
+function single_phase_dab = three_phase_dab_hwdata(application_voltage, pwr_nom, fpwm_dab, fres)
 
     %% dclink for three level is splitted into two parts CFi1, CFi2
     % for DAB is used CFi1_dc1, CFi2_dc1, CFi1_dc2, and CFi2_dc2
     
-%% Example 
-% hwdata.dab = single_phase_dab_hwdata(application_voltage, dab_pwr_nom, glb_time.fPWM_DAB, fres_dab);
+    %% Example
+    % hwdata.three_phase_dab = three_phase_dab_hwdata(application_voltage, dab_pwr_nom, glb_time.fPWM_DAB, fres_dab);
 
 
     
@@ -41,7 +41,7 @@ function single_phase_dab = single_phase_dab_hwdata(application_voltage, pwr_nom
     RLdc_dc2 = 157*0.05*Ldc_dc2; 
 
 
-    dab800V_250kW = hw_dab_single_phase_setup('DAB_800V', pwr_nom, udc1, udc2, uac1, uac2, idc1, idc2, fpwm_dab, fres, ...
+    dab800V_250kW = hw_dab_three_phase_setup('DAB_800V', pwr_nom, udc1, udc2, uac1, uac2, idc1, idc2, fpwm_dab, fres, ...
             n1, n2, Lm, Rfe, Rs1, core_length, core_mur, Cdc_dc1, Cdc1_dc1, Cdc2_dc1, Cdc_dc2, ...
             Cdc1_dc2, Cdc2_dc2, RCdc_dc1, RCdc1_dc1, RCdc2_dc1, RCdc_dc2, RCdc1_dc2, RCdc2_dc2, ...
             Ldc_dc1, Ldc_dc2, RLdc_dc1, RLdc_dc2);
@@ -78,7 +78,7 @@ function single_phase_dab = single_phase_dab_hwdata(application_voltage, pwr_nom
     Ldc_dc2 = 250e-6; 
     RLdc_dc2 = 157*0.05*Ldc_dc2; 
 
-    dab1200V_250kW = hw_dab_single_phase_setup('DAB_1200V', pwr_nom, udc1, udc2, uac1, uac2, idc1, idc2, fpwm_dab, fres, ...
+    dab1200V_250kW = hw_dab_three_phase_setup('DAB_1200V', pwr_nom, udc1, udc2, uac1, uac2, idc1, idc2, fpwm_dab, fres, ...
             n1, n2, Lm, Rfe, Rs1, core_length, core_mur, Cdc_dc1, Cdc1_dc1, Cdc2_dc1, Cdc_dc2, ...
             Cdc1_dc2, Cdc2_dc2, RCdc_dc1, RCdc1_dc1, RCdc2_dc1, RCdc_dc2, RCdc1_dc2, RCdc2_dc2, ...
             Ldc_dc1, Ldc_dc2, RLdc_dc1, RLdc_dc2);   
