@@ -25,6 +25,8 @@ classdef ctrl_im_setup
         ki_inv_d              % Current control integral gain
         kp_inv_q              % Current control proportional gain
         ki_inv_q              % Current control integral gain
+
+        ekf                   % EKF state observer
                 
     end
     
@@ -53,7 +55,6 @@ classdef ctrl_im_setup
                 obj.ki_inv_d = obj.ki_i;
                 obj.kp_inv_q = obj.kp_i;
                 obj.ki_inv_q = obj.ki_i;
-
             end
         end
         

@@ -86,6 +86,7 @@ classdef im_setup
         sigma_norm      % parameter for im dynamic model
         gamma           % parameter for im dynamic model
         gamma_norm      % parameter for im dynamic model
+        
     end
     
     methods
@@ -205,7 +206,7 @@ classdef im_setup
             obj.mu_norm = 3/2*obj.Lm_norm/obj.Jm_norm/obj.Lr_norm;
             obj.sigma_norm = obj.Ls_norm * (1 - (obj.Lm_norm)^2/obj.Ls_norm/obj.Lr_norm); 
             obj.beta_norm = obj.Lm_norm/obj.sigma_norm/obj.Lr_norm;
-            obj.gamma = obj.Rs_norm/obj.sigma_norm + obj.beta_norm*obj.alpha_norm*obj.Lm_norm;
+            obj.gamma_norm = obj.Rs_norm/obj.sigma_norm + obj.beta_norm*obj.alpha_norm*obj.Lm_norm;
 
         end
 

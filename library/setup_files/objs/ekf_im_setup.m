@@ -76,7 +76,7 @@ classdef ekf_im_setup
                                         0 0 0 1 0 0;...
                                         0 0 0 0 1 0;...
                                         0 0 0 0 0 1];
-                obj.Rkalman = [1 0; 0 1];
+                obj.Rkalman = obj.ts * [1 0; 0 1];
                 
                 obj.k_kalman = 1;
                 obj.k_dc = 0;
