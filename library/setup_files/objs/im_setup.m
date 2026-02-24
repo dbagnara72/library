@@ -77,6 +77,15 @@ classdef im_setup
         alpha_norm      double {mustBePositive} % Normalized alpha Rr_nom/Lr_norm [pu]
         psi_norm        double {mustBePositive} % Normalized flux [pu]
         Jm_norm         double {mustBePositive} % Normalized load inertia [pu]
+
+        mu              % parameter for im dynamic model
+        mu_norm         % parameter for im dynamic model
+        beta            % parameter for im dynamic model
+        beta_norm       % parameter for im dynamic model
+        sigma           % parameter for im dynamic model
+        sigma_norm      % parameter for im dynamic model
+        gamma           % parameter for im dynamic model
+        gamma_norm      % parameter for im dynamic model
     end
     
     methods
@@ -113,10 +122,17 @@ classdef im_setup
                 obj.Rr = Rs;
                 obj = im_parameter_calculation(obj);  
                 obj = optimizeRotorResistor(obj, obj.Rs/5, obj.Rs/100, obj.Rs*5, 0.05);
+                
                 obj.alpha = obj.Rr / obj.Lr;
+                obj.mu = 3/2*obj.Lm/obj.Jm/obj.Lr;
+                obj.sigma = obj.Ls * (1-(obj.Lm)^2/obj.Ls/obj.Lr);
+                obj.beta = obj.Lm/obj.sigma/obj.Lr;
+                obj.gamma = obj.Rs/obj.sigma + obj.beta * obj.alpha * obj.Lm;
+
                 obj = im_normalization(obj);  
                 
                 obj.load_friction =  obj.torque_nom * load_friction_factor / obj.omega_m_bez;
+
             end
         end
         
@@ -167,7 +183,7 @@ classdef im_setup
             obj.Lm = obj.Ls - obj.Lds;
             obj.Lr = obj.Lm + obj.Ldr;
             obj.psi_nom = obj.i_no_load * sqrt(2) * obj.Lm;            
-            obj.psi_bez = obj.u_nom / sqrt(3/2) / obj.omega_bez;            
+            obj.psi_bez = obj.u_nom / sqrt(3/2) / obj.omega_bez; 
         end
 
         function obj = im_normalization(obj)
@@ -185,6 +201,11 @@ classdef im_setup
             obj.alpha_norm = obj.Rr_norm / obj.Lr_norm;
             obj.psi_norm = obj.psi_nom / obj.psi_bez;
             obj.Jm_norm = 1/2*obj.Jm*obj.omega_m_bez/obj.torque_nom; 
+
+            obj.mu_norm = 3/2*obj.Lm_norm/obj.Jm_norm/obj.Lr_norm;
+            obj.sigma_norm = obj.Ls_norm * (1 - (obj.Lm_norm)^2/obj.Ls_norm/obj.Lr_norm); 
+            obj.beta_norm = obj.Lm_norm/obj.sigma_norm/obj.Lr_norm;
+            obj.gamma = obj.Rs_norm/obj.sigma_norm + obj.beta_norm*obj.alpha_norm*obj.Lm_norm;
 
         end
 
