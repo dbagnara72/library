@@ -122,7 +122,7 @@ classdef ekf_im_setup
                 [P, L, G, report] = idare(obj.A_tilde_ekf', obj.C_ekf', obj.Qkalman, obj.Rkalman); 
 
                 if report.Report == 0
-                    disp('EKF seems stable.');
+                    disp('EKF is stable.');
                 end
             end
         end
