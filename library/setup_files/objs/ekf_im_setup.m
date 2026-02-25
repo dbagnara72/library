@@ -78,7 +78,7 @@ classdef ekf_im_setup
                                0 0 0 0 0 1];
                 
                 obj.Qkalman = obj.ts * Qkalman;
-                obj.Rkalman = [1 0; 0 1];
+                obj.Rkalman = [2 0; 0 2];
                 
                 obj.k_kalman = 1;
                 obj.k_dc = 0;
