@@ -45,6 +45,7 @@ classdef ekf_im_setup
                                     0 alpha*lm 0 -alpha 0 0; ...
                                     0 0 0 0 0 -1/jm; ...
                                     0 0 0 0 0 0];
+
                 obj.A2_tilde_ekf = [0 0 0 0 0 0; ...
                                     0 0 0 0 0 0; ...
                                     0 0 0 0 0 0; ...
@@ -117,15 +118,15 @@ classdef ekf_im_setup
                 
                 Co = ctrb(obj.A_tilde_ekf, obj.Qkalman);
                 if rank(Co) == size(obj.A_tilde_ekf,1)
-                    disp('EKF Fully controllable');
+                    disp('IM EKF Fully controllable');
                 else
-                    disp('EKF Not fully controllable');
+                    disp('IM EKF Not fully controllable');
                 end
 
                 [P, L, G, report] = idare(obj.A_tilde_ekf', obj.C_ekf', obj.Qkalman, obj.Rkalman); 
 
                 if report.Report == 0
-                    disp('EKF is stable.');
+                    disp('IM EKF is stable.');
                 end
             end
         end
