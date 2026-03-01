@@ -1,14 +1,13 @@
-function sogi = sogi_filter(omega, delta, ts)
+function sogi = sogi_filter(omega_m, delta_m, ts_m)
     options = bodeoptions;
     options.FreqUnits = 'Hz';
-    s = tf('s')';
+    s = tf('s');
 
-    sogi.flt.alpha = delta*omega*s/(s^2 + delta*omega*s + omega^2);
-    sogi.flt.beta = delta*omega^2/(s^2 + delta*omega*s + omega^2);
+    sogi.flt.alpha = delta_m * omega_m * s/(s^2 + delta_m * omega_m * s + omega_m^2);
+    sogi.flt.beta = delta_m * omega_m^2/(s^2 + delta_m * omega_m * s + omega_m^2);
     
-    sogi.fltd.alpha = c2d(sogi.flt.alpha, ts);
-    sogi.fltd.beta = c2d(sogi.flt.beta, ts);
-
+    sogi.fltd.alpha = c2d(sogi.flt.alpha, ts_m);
+    sogi.fltd.beta = c2d(sogi.flt.beta, ts_m);
 
     % 1. Define frequency range in Hz (10 Hz to 10 kHz)
     freq_Hz = logspace(1, 3, 1000); 
@@ -44,7 +43,7 @@ function sogi = sogi_filter(omega, delta, ts)
     grid on;
     set(gca, 'FontSize', 12); % Adjust font size for axes
     set(gca, 'xlim', [freq_Hz(1) freq_Hz(end)]);
-    
+
     % 4. Plot Phase (Bottom Subplot)
     subplot 212;
     semilogx(freq_Hz, phase_alpha, ...
