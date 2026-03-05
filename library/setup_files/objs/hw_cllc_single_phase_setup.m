@@ -135,7 +135,7 @@ classdef hw_cllc_single_phase_setup
             fprintf('Normalization Voltage DC2: %d [V] | Normalization Current DC2: %d [A]\n', ...
                 obj.udc2_bez, obj.idc2_bez);
             fprintf('Internal Tank Ls: %d [H] | Internal Tank Cs: %d [F]\n', ...
-                obj.Ls, obj.idc2_bez);
+                obj.Ls, obj.Cs);
             fprintf('---------------------------\n');
         end
     end
