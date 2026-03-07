@@ -41,6 +41,7 @@ component saturable_single_phase_transformer
     end
 
     parameters
+        en_sat = {0, '1'};                   % Enable Saturation
         Lm = {1.8e-3, 'H'};                  % Lm1 (H)
         n1 = {16, '1'};                      % n1
         n2 = {1, '1'};                       % n2

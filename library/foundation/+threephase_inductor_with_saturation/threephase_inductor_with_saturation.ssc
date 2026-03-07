@@ -44,6 +44,9 @@ component threephase_inductor_with_saturation
         psi_u_out = {0, 'V*s'};       % psi-u
         psi_v_out = {0, 'V*s'};       % psi-v
         psi_w_out = {0, 'V*s'};       % psi-w
+        iu_out = {0, 'A'};       % iu
+        iv_out = {0, 'A'};       % iv
+        iw_out = {0, 'A'};       % iw
     end
 
     parameters
@@ -165,6 +168,9 @@ component threephase_inductor_with_saturation
             psi_u_out == psi_u;
             psi_v_out == psi_v;
             psi_w_out == psi_w;
+            iu_out == iu;
+            iv_out == iv;
+            iw_out == iw;
         end
     end
 end
