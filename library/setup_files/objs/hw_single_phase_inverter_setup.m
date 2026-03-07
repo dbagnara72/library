@@ -16,7 +16,11 @@ classdef hw_single_phase_inverter_setup
         CFi2            double {mustBePositive} % DClink capacitor bank 2 [F]
         RCFi2           double {mustBePositive} % DClink internal resistance [Ohm]
         LFu             double {mustBePositive} % Output filter inductace [H]
+        LFu1            double {mustBePositive} % Output filter inductace (half) [H]
+        LFu2            double {mustBePositive} % Output filter inductace (half)[H]
         RLFu            double {mustBePositive} % Output filter inductace resistance [Ohm]
+        RLFu1           double {mustBePositive} % Output filter inductace resistance (half) [Ohm]
+        RLFu2           double {mustBePositive} % Output filter inductace resistance (half) [Ohm]
         LFu_cm          double {mustBePositive} % Output filter inductace [H]
         RLFu_cm         double {mustBePositive} % Output filter inductace resistance [Ohm]
         CFu             double {mustBePositive} % Output filter capacitor [F]
@@ -46,8 +50,12 @@ classdef hw_single_phase_inverter_setup
                 obj.RCFi1 = RCFi1;
                 obj.RCFi2 = RCFi2;
                 obj.LFu = LFu;
+                obj.LFu1 = LFu/2;
+                obj.LFu2 = LFu/2;
                 obj.LFu_cm = LFu_cm;
                 obj.RLFu = RLFu;
+                obj.RLFu1 = RLFu/2;
+                obj.RLFu2 = RLFu/2;
                 obj.RLFu_cm = RLFu_cm;
                 obj.CFu = CFu;
                 obj.RCFu = RCFu;
