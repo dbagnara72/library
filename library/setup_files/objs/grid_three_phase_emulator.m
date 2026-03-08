@@ -1,6 +1,32 @@
 
 %% example
-% grid = grid_three_phase_emulator('wind_grid', 1600e3, 690, 690, 690, 50, 95, 5.6, 10, 1200, 1,0,0,0);
+% name = 'Dyn11-690V-690V-1600kW';
+% pwr_nom = 1600e3;
+% application = 690;
+% u1_nom = application;
+% u2_nom = application;
+% f_nom = 50;
+% eta = 98;
+% ucc = 4.6;
+% i1m = 10; % magnetization current
+% p_iron = 10e3;
+% n2 = 14;
+% n1 = floor(n2*sqrt(3));
+% core_area = 0.05;
+% core_length = 2.5;
+% mu0 = 4*pi*1e-7;
+% mur = 10e3;
+% trafo = three_phase_transformer_setup(name, pwr_nom, u1_nom, u2_nom, f_nom, eta, ucc, ...
+% i1m, p_iron, n1, n2, core_area, core_length, mur);
+
+% two simple calculation:
+% Lm1 = (n1^2 * mu0 * mur * core_area) / core_length;
+% Lm1 = u1_nom/sqrt(3)/i1m/(2*pi*f_nom);
+% i1m = u1_nom/sqrt(3)/Lm1/(2*pi*f_nom);
+
+
+% grid_emu = grid_three_phase_emulator(name, pwr_nom, application, u1_nom, u2_nom, f_nom, ...
+% eta, ucc, i1m, p_iron, n1, n2, core_area, core_length, mur, 1,0,0,0);
 
 %% class definition
 classdef grid_three_phase_emulator
@@ -42,7 +68,8 @@ classdef grid_three_phase_emulator
     methods
 
         function obj = grid_three_phase_emulator(name, pwr_nom, application_voltage, us1, us2, fgrid, ...
-                eta, ucc, i1m, p_iron, up_xi_pu_ref, up_eta_pu_ref, un_xi_pu_ref, un_eta_pu_ref)
+                eta, ucc, i1m, p_iron, n1, n2, core_area, core_length, mur, ...
+                up_xi_pu_ref, up_eta_pu_ref, un_xi_pu_ref, un_eta_pu_ref)
             if nargin > 0
                 obj.name = name;
                 obj.application_voltage = application_voltage;
@@ -53,8 +80,8 @@ classdef grid_three_phase_emulator
                 obj.is_secondary_nom = pwr_nom/sqrt(3)/us2;
                 obj.fgrid_nom = fgrid;
                 obj.omega_grid_nom = fgrid * 2*pi;
-                obj.trafo =  three_phase_transformer_setup(obj.name, obj.pwr_nom, obj.us_primary_nom, ...
-                    obj.us_secondary_nom, obj.fgrid_nom, eta, ucc, i1m, p_iron);
+                obj.trafo =  three_phase_transformer_setup(name, pwr_nom, us1, us2, fgrid, eta, ...
+                ucc, i1m, p_iron, n1, n2, core_area, core_length, mur);
 
                 obj.u1bez =  obj.us_primary_nom * sqrt(2/3);
                 obj.i1bez =  obj.is_primary_nom * sqrt(2);
