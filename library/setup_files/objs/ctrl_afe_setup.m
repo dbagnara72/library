@@ -9,8 +9,8 @@ classdef ctrl_afe_setup
         ts                      double {mustBePositive} % Samping time [s]
         omega_base              double {mustBePositive} % Base pulsation [s]
         omega_diobs             double {mustBePositive} % Double Integrator Observer - base pulsation [s]
-        di_obs                   % Double Integrator Observer Object 
-        vr_obs                   % Double Integrator Observer Object 
+        di_obs                  % Double Integrator Observer Object 
+        vr_obs                  % Double Integrator Observer Object 
         fht_grid                % First harmonic Tracker Object for Grid application 
         fht_load                % First harmonic Tracker Object for Load application 
         res_pi                  % Resonant PI Object for grid current control 
@@ -33,6 +33,9 @@ classdef ctrl_afe_setup
         ki_rc_pos_grid
         kp_rc_neg_grid
         ki_rc_neg_grid
+
+        kp_is_z
+        ki_is_z
 
         pll_i1
         pll_p
@@ -119,6 +122,8 @@ classdef ctrl_afe_setup
                 obj.i_grid_neg_eta_red_lim = 0.1;
                 obj.i_grid_neg_xi_red_lim = 0.1;
                 
+                obj.kp_is_z = 0.5;
+                obj.ki_is_z = 18;
             end
         end
         
