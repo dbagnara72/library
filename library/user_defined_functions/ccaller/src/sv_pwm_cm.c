@@ -35,7 +35,7 @@ void sv_pwm_cm_process(SVPWM_CM *c)
     // Calcolo dell'offset per il controllo di modo comune
     // k_offset = 0.5 (SVPWM standard), 0.0 (solo V0), 1.0 (solo V7)
     float k_offset = (c->ugamma + MATH_1) * MATH_HALF;
-    float common_offset = t0 * k_offset; 
+    float common_offset = 0; 
 
 	if (c->enable)
 	{
@@ -55,7 +55,7 @@ void sv_pwm_cm_process(SVPWM_CM *c)
                 c->dc = t2 * tbpwm + c->db;       // Fine del secondo
 				}
         	else {
-				c->da = t0 * tbpwm * MATH_HALF;
+				c->da = t0 * tbpwm * k_offset;
 				c->db = t1 * tbpwm + c->da;
 				c->dc = t2 * tbpwm + c->db;
 			}
@@ -71,12 +71,12 @@ void sv_pwm_cm_process(SVPWM_CM *c)
 			if (t0 < 0) {
                 /* Invece di t0 * MATH_HALF, usiamo il k_offset di controllo */
                 common_offset = t0 * k_offset; 
-                c->da = common_offset;            // Inizio del primo vettore attivo
-                c->db = t1 * tbpwm + c->da;       // Fine del primo / Inizio del secondo
-                c->dc = t2 * tbpwm + c->db;       // Fine del secondo
+                c->db = common_offset;            // Inizio del primo vettore attivo
+                c->da = t1 * tbpwm + c->db;       // Fine del primo / Inizio del secondo
+                c->dc = t2 * tbpwm + c->da;       // Fine del secondo
 				}
         	else {
-				c->db = t0 * tbpwm * MATH_HALF;
+				c->db = t0 * tbpwm * k_offset;
 				c->da = t1 * tbpwm + c->db;
 				c->dc = t2 * tbpwm + c->da;
 			}
@@ -91,12 +91,12 @@ void sv_pwm_cm_process(SVPWM_CM *c)
 			if (t0 < 0) {
                 /* Invece di t0 * MATH_HALF, usiamo il k_offset di controllo */
                 common_offset = t0 * k_offset; 
-                c->da = common_offset;            // Inizio del primo vettore attivo
-                c->db = t1 * tbpwm + c->da;       // Fine del primo / Inizio del secondo
-                c->dc = t2 * tbpwm + c->db;       // Fine del secondo
+                c->db = common_offset;            // Inizio del primo vettore attivo
+                c->dc = t1 * tbpwm + c->db;       // Fine del primo / Inizio del secondo
+                c->da = t2 * tbpwm + c->dc;       // Fine del secondo
 				}
         	else {
-				c->db = t0 * tbpwm * MATH_HALF;
+				c->db = t0 * tbpwm * k_offset;
 				c->dc = t1 * tbpwm + c->db;
 				c->da = t2 * tbpwm + c->dc;
 			}
@@ -111,12 +111,12 @@ void sv_pwm_cm_process(SVPWM_CM *c)
 			if (t0 < 0) {
                 /* Invece di t0 * MATH_HALF, usiamo il k_offset di controllo */
                 common_offset = t0 * k_offset; 
-                c->da = common_offset;            // Inizio del primo vettore attivo
-                c->db = t1 * tbpwm + c->da;       // Fine del primo / Inizio del secondo
-                c->dc = t2 * tbpwm + c->db;       // Fine del secondo
+                c->dc = common_offset;            // Inizio del primo vettore attivo
+                c->db = t1 * tbpwm + c->dc;       // Fine del primo / Inizio del secondo
+                c->da = t2 * tbpwm + c->db;       // Fine del secondo
 				}
         	else {
-				c->dc = t0 * tbpwm * MATH_HALF;
+				c->dc = t0 * tbpwm * k_offset;
 				c->db = t1 * tbpwm + c->dc;
 				c->da = t2 * tbpwm + c->db;
 			}
@@ -131,12 +131,12 @@ void sv_pwm_cm_process(SVPWM_CM *c)
 			if (t0 < 0) {
                 /* Invece di t0 * MATH_HALF, usiamo il k_offset di controllo */
                 common_offset = t0 * k_offset; 
-                c->da = common_offset;            // Inizio del primo vettore attivo
-                c->db = t1 * tbpwm + c->da;       // Fine del primo / Inizio del secondo
-                c->dc = t2 * tbpwm + c->db;       // Fine del secondo
+                c->dc = common_offset;            // Inizio del primo vettore attivo
+                c->da = t1 * tbpwm + c->dc;       // Fine del primo / Inizio del secondo
+                c->db = t2 * tbpwm + c->da;       // Fine del secondo
 				}
         	else {
-				c->dc = t0 * tbpwm * MATH_HALF;
+				c->dc = t0 * tbpwm * k_offset;
 				c->da = t1 * tbpwm + c->dc;
 				c->db = t2 * tbpwm + c->da;
 			}
@@ -153,11 +153,11 @@ void sv_pwm_cm_process(SVPWM_CM *c)
                 /* Invece di t0 * MATH_HALF, usiamo il k_offset di controllo */
                 common_offset = t0 * k_offset; 
                 c->da = common_offset;            // Inizio del primo vettore attivo
-                c->db = t1 * tbpwm + c->da;       // Fine del primo / Inizio del secondo
-                c->dc = t2 * tbpwm + c->db;       // Fine del secondo
+                c->dc = t1 * tbpwm + c->da;       // Fine del primo / Inizio del secondo
+                c->db = t2 * tbpwm + c->dc;       // Fine del secondo
 				}
         	else {
-				c->da = t0 * tbpwm * MATH_HALF;
+				c->da = t0 * tbpwm * k_offset;
 				c->dc = t1 * tbpwm + c->da;
 				c->db = t2 * tbpwm + c->dc;
 			}
