@@ -157,8 +157,8 @@ classdef ctrl_afe_setup
                 poles_fht = [-1 -4] * out.omega_fht;
                 out.Ad_fht = eye(2) + out.Afht * obj.ts;
                 polesd_fht = exp(obj.ts * poles_fht);
-            out.L_fht = acker(out.Afht',out.Cfht', poles_fht)';
-            out.Ld_fht = acker(out.Ad_fht',out.Cfht', polesd_fht);
+            out.L_fht = (acker(out.Afht',out.Cfht', poles_fht))';
+            out.Ld_fht = acker(out.Ad_fht',out.Cfht', polesd_fht)';
         end
 
         function out = resonant_pi(obj)

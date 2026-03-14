@@ -39,6 +39,7 @@ classdef three_phase_transformer_setup
         i1m                 double {mustBePositive} % Transformer primary side magnetization current [A]
         n12                 double {mustBePositive} % Transformer U1/U2 []
         Rd1                 double {mustBePositive} % Transformer primary side winding resistance [Ohm]
+        Lsigma              double {mustBePositive} % Transformer leakage inductance [H]
         Ld1                 double {mustBePositive} % Transformer primary side leakage inductance [H]
         Lm1                 double {mustBePositive} % Transformer primary side magnetization inductance [H]
         Rd2                 double {mustBePositive} % Transformer secondary side winding resistance [Ohm]
@@ -73,11 +74,12 @@ classdef three_phase_transformer_setup
                 obj.n1 = n1;
                 obj.n2 = n2;
                 
-                obj.Ld1 = 0.5 * (obj.u1_nom*obj.ucc/100/sqrt(3)/obj.i1_nom/(2*pi*obj.f_nom));
+                obj.Lsigma = (obj.u1_nom*obj.ucc/100/sqrt(3)/obj.i1_nom/(2*pi*obj.f_nom));
+                obj.Ld1 = 3/2 * obj.Lsigma; % Dy transformer
                 obj.Rd1 = 0.5 * ((1 - obj.eta/100) * obj.pwr_nom / 3 / obj.i1_nom^2); 
                 obj.Lm1 = obj.u1_nom/sqrt(3)/obj.i1m/(2*pi*obj.f_nom);
                 
-                obj.Ld2 = obj.Ld1 / (obj.n12)^2;
+                obj.Ld2 = obj.Lsigma / 2 / (obj.n12)^2;
                 obj.Rd2 = obj.Rd1 / (obj.n12)^2;
                 obj.Lm2 = obj.Lm1 / (obj.n12)^2;
                 
