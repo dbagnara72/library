@@ -1,83 +1,104 @@
 
 %% example
-% name = 'Dyn11-690V-690V-1600kW';
-% pwr_nom = 1600e3;
-% u1_nom = 690;
-% u2_nom = 690;
-% f_nom = 50;
-% eta = 98;
-% ucc = 4.6;
-% i1m = 10;
-% p_iron = 10e3;
-% afe_ctrl = ctrl_setup(name, pwr_nom, u1_nom, u2_nom, f_nom, eta, ucc, i1m, p_iron);
+% single_phase_inverter_ctrl = ctrl_single_phase_inverter_setup(ts, omega_base, ...
+% kp_inv, ki_inv, kp_rpi, ki_rpi, delta_rpi);
+
 
 %% class definition
-classdef afe_ctrl_setup
+classdef ctrl_single_phase_inverter_setup
     properties
-        name        string
-        pwr_nom     double {mustBePositive} % Nominal power [W]
-        u1_nom      double {mustBePositive} % Transformer nominal primary side voltage [V]
-        i1_nom      double {mustBePositive} % Transformer nominal primary side current [A]
-        u2_nom      double {mustBePositive} % Transformer nominal secondary side voltage [V]
-        i2_nom      double {mustBePositive} % Transformer nominal secondary side current [A]
-        n1          double {mustBePositive} % Transformer nominal secondary side current [A]
-        n2          double {mustBePositive} % Transformer nominal secondary side current [A]
-        f_nom       double {mustBePositive} % Nominal frequency [Hz]
-        eta         double {mustBePositive} % Transformer efficiency [%]
-        ucc         double {mustBePositive} % Transformer short circuit voltage [%]
-        i1m         double {mustBePositive} % Transformer primary side magnetization current [A]
-        n12         double {mustBePositive} % Transformer U1/U2 []
-        Rd1         double {mustBePositive} % Transformer primary side winding resistance [Ohm]
-        Ld1         double {mustBePositive} % Transformer primary side leakage inductance [H]
-        Lm1         double {mustBePositive} % Transformer primary side magnetization inductance [H]
-        Rd2         double {mustBePositive} % Transformer secondary side winding resistance [Ohm]
-        Ld2         double {mustBePositive} % Transformer secondary side leakage inductance [H]
-        Lm2         double {mustBePositive} % Transformer secondary side magnetization inductance [H]
-        p_iron      double {mustBePositive} % Transformer iron losses [W]
-        Rfe1        double {mustBePositive} % Transformer primary side equivalent iron losses resistance [Ohm]
-        psi         double {mustBePositive} % Transformer core flux [Vs]
+        ts                      double {mustBePositive} % Samping time [s]
+        omega_base              double {mustBePositive} % Base pulsation [s]
+        omega_diobs             double {mustBePositive} % Double Integrator Observer - base pulsation [s]
+        di_obs                  % Double Integrator Observer Object 
+        vr_obs                  % Double Integrator Observer Object 
+        fht_load                % First harmonic Tracker Object for Load application 
+        res_pi                  % Resonant PI Object for grid current control 
+        rms
+        kp_inv
+        ki_inv
+        u_lim
+        kp_rpi
+        ki_rpi
+        delta_rpi
     end
     
     methods
 
-        function obj = ctrl_setup(name, pwr_nom, u1_nom, u2_nom, f_nom, eta, ucc, i1m, p_iron)
+        function obj = ctrl_single_phase_inverter_setup(ts, omega_base, kp_inv, ki_inv, kp_rpi, ki_rpi, delta_rpi)
             if nargin > 0
-                obj.name = name;
-                obj.pwr_nom = pwr_nom;
-                obj.u1_nom = u1_nom;
-                obj.i1_nom = obj.pwr_nom/sqrt(3)/obj.u1_nom;
-                obj.u2_nom = u2_nom;
-                obj.i2_nom = obj.pwr_nom/sqrt(3)/obj.u2_nom;
-                obj.f_nom = f_nom;
-                obj.ucc = ucc;
-                obj.eta = eta;
-                obj.i1m = i1m;
-                obj.n12 = obj.u1_nom/obj.u2_nom;
+                obj.ts = ts;
+                obj.omega_base = omega_base;
+                obj.omega_diobs = obj.omega_base;
+                obj.kp_inv = kp_inv;
+                obj.ki_inv = ki_inv;
+                obj.u_lim = 1.0;
+                obj.kp_rpi = kp_rpi;
+                obj.ki_rpi = ki_rpi;
+                obj.delta_rpi = delta_rpi;
+                obj.di_obs = double_integrator_observer(obj);
+                obj.vr_obs = voltage_rate_observer(obj);
+                obj.fht_load = first_harmonic_tracker(obj);
+                obj.res_pi = resonant_pi(obj);
+                obj.rms = rms_setup(obj);
 
-                obj.n1 = 50*sqrt(3);
-                obj.n2 = 50;
-                
-                obj.Ld1 = 0.5 * (obj.u1_nom*obj.ucc/100/sqrt(3)/obj.i1_nom/(2*pi*obj.f_nom));
-                obj.Rd1 = 0.5 * ((1 - obj.eta/100) * obj.pwr_nom / 3 / obj.i1_nom^2); 
-                obj.Lm1 = obj.u1_nom/sqrt(3)/obj.i1m/(2*pi*obj.f_nom);
-                
-                obj.Ld2 = obj.Ld1 / (obj.n12)^2;
-                obj.Rd2 = obj.Rd1 / (obj.n12)^2;
-                obj.Lm2 = obj.Lm1 / (obj.n12)^2;
-                
-                obj.p_iron = p_iron;
-                obj.Rfe1 = (obj.u1_nom/sqrt(3))^2/(obj.p_iron/3);
-                obj.psi = obj.Lm1*obj.i1m*sqrt(2);
 
             end
         end
         
-        function double_integrator_observer(obj)
-            fprintf('Three Phase Transformer Setup: %s\n', obj.name);
-            fprintf('Primary Side Leakage Inductance: %.2f H | Secondary Side Leakage Inductance: %.2f H\n', obj.Ld1, obj.Ld2);
-            fprintf('Primary Side Magnetization Inductance: %.2f H\n', obj.Lm1);
-            fprintf('---------------------------\n');
+        function out = double_integrator_observer(obj)
+                out.Aso = [0 1; 0 0];
+                out.Adso = eye(2) + out.Aso*obj.ts;
+                out.Cso = [1 0];
+                p2place = [-1 -4]*obj.omega_diobs;
+                p2placed = exp(p2place*obj.ts);
+                out.Ldso = (acker(out.Adso',out.Cso',p2placed))';
+            out.komega = out.Ldso(2) / obj.ts;
+            out.ktheta = out.Ldso(1) / obj.ts;
         end
+
+        function out = voltage_rate_observer(obj)
+                out.Aso = [0 1; 0 0];
+                out.Adso = eye(2) + out.Aso*obj.ts;
+                out.Cso = [1 0];
+                p2place = [-0.1 -0.4]*obj.omega_diobs;
+                p2placed = exp(p2place*obj.ts);
+                out.Ldso = (acker(out.Adso',out.Cso',p2placed))';
+            out.kv = out.Ldso(2) / obj.ts;
+            out.kx = out.Ldso(1) / obj.ts;
+        end
+
+        function out = first_harmonic_tracker(obj)
+                out.omega_fht = obj.omega_base;
+                out.delta_fht = 0.05;
+                out.Afht = [0 1; -out.omega_fht^2 -out.delta_fht*out.omega_fht];
+                out.Cfht = [1 0];
+                poles_fht = [-1 -4] * out.omega_fht;
+                out.Ad_fht = eye(2) + out.Afht * obj.ts;
+                polesd_fht = exp(obj.ts * poles_fht);
+            out.L_fht = (acker(out.Afht',out.Cfht', poles_fht))';
+            out.Ld_fht = acker(out.Ad_fht',out.Cfht', polesd_fht)';
+        end
+
+        function out = resonant_pi(obj)
+            out.kp_rpi = obj.kp_rpi;
+            out.ki_rpi = obj.ki_rpi;
+            out.delta_res = obj.delta_rpi;            
+            out.Ares = [0 1; -(obj.omega_base)^2 -2*obj.delta_rpi*obj.omega_base];
+            out.Bres = [0; 1];
+            out.Cres = [0 1];
+            out.Aresd = eye(2) + out.Ares*obj.ts;
+            out.Bresd = out.Bres*obj.ts;
+            out.Cresd = out.Cres;
+        end
+
+        function out = rms_setup(obj)
+            rms_perios = 1;
+            out.n1 = 2*pi * rms_perios / obj.omega_base / obj.ts;
+            rms_perios = 10;
+            out.n10 = 2*pi * rms_perios / obj.omega_base / obj.ts;
+        end
+
     end
 end
 
