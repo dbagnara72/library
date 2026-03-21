@@ -1,8 +1,13 @@
-function sogi = sogi_filter(omega_m, delta_m, ts_m)
+function sogi = sogi_filter(omega_m, delta_m, kepsilon_m, ts_m)
     options = bodeoptions;
     options.FreqUnits = 'Hz';
     s = tf('s');
 
+    sogi.omega = omega_m;
+    sogi.delta = delta_m;
+    sogi.ts = ts_m;
+    sogi.kepsilon = kepsilon_m;
+    
     sogi.flt.alpha = delta_m * omega_m * s/(s^2 + delta_m * omega_m * s + omega_m^2);
     sogi.flt.beta = delta_m * omega_m^2/(s^2 + delta_m * omega_m * s + omega_m^2);
     
