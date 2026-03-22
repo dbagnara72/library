@@ -6,6 +6,9 @@
 #ifndef __SOGI_FLT__
 #define __SOGI_FLT__
 
+#include <math.h>
+#include <math_f.h>
+
 typedef struct sogi_flt_s {
 	float								ts;					/* sampling time */
 	float								kepsilon;			/* gain */

@@ -6,6 +6,9 @@
 #ifndef _DSMAVGFLT_
 #define _DSMAVGFLT_
 
+#include <math.h>
+#include <math_f.h>
+
 #define DSMAVGFLT_SIZE_MAX	1600
 
 typedef struct dsmavgflt_s {

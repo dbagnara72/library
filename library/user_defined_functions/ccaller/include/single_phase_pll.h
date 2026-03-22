@@ -5,7 +5,8 @@
 
 #ifndef __SINGLE_PHASE_PLL__
 #define __SINGLE_PHASE_PLL__
-
+#include <math.h>
+#include <math_f.h>
 typedef struct single_phase_pll_s {
 	float								ts;					/* sampling time */
 	float								kp_pll;				/* proportional gain */

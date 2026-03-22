@@ -78,9 +78,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_dB1 = 0;
 
 	if (twvpr->synch_dA1 == 1)
-		twvpr->synch_d1 = alpha + PWIDTH;
+		twvpr->synch_d1 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_d1 = twvpr->synch_d1 + PWIDTH;
+		twvpr->synch_d1 = twvpr->synch_d1 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_1 = twvpr->synch_dA1 * twvpr->synch_dB1;
@@ -100,9 +100,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_dB2 = 0;
 
 	if (twvpr->synch_dA2 == 1)
-		twvpr->synch_d2 = alpha + PWIDTH;
+		twvpr->synch_d2 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_d2 = twvpr->synch_d2 + PWIDTH;
+		twvpr->synch_d2 = twvpr->synch_d2 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_2 = twvpr->synch_dA2 * twvpr->synch_dB2;
@@ -122,9 +122,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_dB3 = 0;
 
 	if (twvpr->synch_dA3 == 1)
-		twvpr->synch_d3 = alpha + PWIDTH;
+		twvpr->synch_d3 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_d3 = twvpr->synch_d3 + PWIDTH;
+		twvpr->synch_d3 = twvpr->synch_d3 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_3 = twvpr->synch_dA3 * twvpr->synch_dB3;
@@ -144,9 +144,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_dB4 = 0;
 
 	if (twvpr->synch_dA4 == 1)
-		twvpr->synch_d4 = alpha + PWIDTH;
+		twvpr->synch_d4 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_d4 = twvpr->synch_d4 + PWIDTH;
+		twvpr->synch_d4 = twvpr->synch_d4 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_4 = twvpr->synch_dA4 * twvpr->synch_dB4;
@@ -166,9 +166,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_dB5 = 0;
 
 	if (twvpr->synch_dA5 == 1)
-		twvpr->synch_d5 = alpha + PWIDTH;
+		twvpr->synch_d5 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_d5 = twvpr->synch_d5 + PWIDTH;
+		twvpr->synch_d5 = twvpr->synch_d5 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_5 = twvpr->synch_dA5 * twvpr->synch_dB5;
@@ -188,9 +188,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_dB6 = 0;
 
 	if (twvpr->synch_dA6 == 1)
-		twvpr->synch_d6 = alpha + PWIDTH;
+		twvpr->synch_d6 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_d6 = twvpr->synch_d6 + PWIDTH;
+		twvpr->synch_d6 = twvpr->synch_d6 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_6 = twvpr->synch_dA6 * twvpr->synch_dB6;
@@ -210,9 +210,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_yB1 = 0;
 
 	if (twvpr->synch_yA1 == 1)
-		twvpr->synch_y1 = alpha + PWIDTH;
+		twvpr->synch_y1 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_y1 = twvpr->synch_y1 + PWIDTH;
+		twvpr->synch_y1 = twvpr->synch_y1 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_1 = twvpr->synch_yA1 * twvpr->synch_yB1;
@@ -232,9 +232,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_yB2 = 0;
 
 	if (twvpr->synch_yA2 == 1)
-		twvpr->synch_y2 = alpha + PWIDTH;
+		twvpr->synch_y2 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_y2 = twvpr->synch_y2 + PWIDTH;
+		twvpr->synch_y2 = twvpr->synch_y2 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_2 = twvpr->synch_yA2 * twvpr->synch_yB2;
@@ -254,9 +254,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_yB3 = 0;
 
 	if (twvpr->synch_yA3 == 1)
-		twvpr->synch_y3 = alpha + PWIDTH;
+		twvpr->synch_y3 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_y3 = twvpr->synch_y3 + PWIDTH;
+		twvpr->synch_y3 = twvpr->synch_y3 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_3 = twvpr->synch_yA3 * twvpr->synch_yB3;
@@ -276,9 +276,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_yB4 = 0;
 
 	if (twvpr->synch_yA4 == 1)
-		twvpr->synch_y4 = alpha + PWIDTH;
+		twvpr->synch_y4 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_y4 = twvpr->synch_y4 + PWIDTH;
+		twvpr->synch_y4 = twvpr->synch_y4 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_4 = twvpr->synch_yA4 * twvpr->synch_yB4;
@@ -298,9 +298,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_yB5 = 0;
 
 	if (twvpr->synch_yA5 == 1)
-		twvpr->synch_y5 = alpha + PWIDTH;
+		twvpr->synch_y5 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_y5 = twvpr->synch_y5 + PWIDTH;
+		twvpr->synch_y5 = twvpr->synch_y5 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_5 = twvpr->synch_yA5 * twvpr->synch_yB5;
@@ -320,9 +320,9 @@ float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const in
 		twvpr->synch_yB6 = 0;
 
 	if (twvpr->synch_yA6 == 1)
-		twvpr->synch_y6 = alpha + PWIDTH;
+		twvpr->synch_y6 = alpha + PWIDTH_PU;
 	else
-		twvpr->synch_y6 = twvpr->synch_y6 + PWIDTH;
+		twvpr->synch_y6 = twvpr->synch_y6 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_6 = twvpr->synch_yA6 * twvpr->synch_yB6;

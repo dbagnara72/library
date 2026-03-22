@@ -6,6 +6,9 @@
 #ifndef _PHASE_SHIFT_FLT_
 #define _PHASE_SHIFT_FLT_
 
+#include <math.h>
+#include <math_f.h>
+
 typedef struct phase_shift_flt_s {
 	float								ts;				/* sampling time */
 	float								fcut;			/* frequency at 90 degree phase shit */

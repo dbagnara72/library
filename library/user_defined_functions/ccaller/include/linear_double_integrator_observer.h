@@ -5,7 +5,8 @@
 
 #ifndef _LINEAR_DOUBLE_INTEGRATOR_OBSVR_
 #define _LINEAR_DOUBLE_INTEGRATOR_OBSVR_
-
+#include <math.h>
+#include <math_f.h>
 typedef struct linear_double_integrator_observer_s {
 	float					ts;						/* sampling time */
 	float					kx;						/* filter coefficient a */

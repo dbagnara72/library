@@ -6,6 +6,9 @@
 #ifndef _MAVGFLT_
 #define _MAVGFLT_
 
+#include <math.h>
+#include <math_f.h>
+
 #define MAVGFLT_SIZE_MAX	1600
 
 typedef struct mavgflt_s {

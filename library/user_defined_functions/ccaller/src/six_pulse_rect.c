@@ -59,9 +59,9 @@ float sprcProcess(sprc_t *spr, const float wt, const float alpha, const int bloc
 		spr->synch_B1 = 0;
 
 	if (spr->synch_A1 == 1)
-		spr->synch_1 = alpha + PWIDTH;
+		spr->synch_1 = alpha + PWIDTH_PU;
 	else
-		spr->synch_1 = spr->synch_1 + PWIDTH;
+		spr->synch_1 = spr->synch_1 + PWIDTH_PU;
 		
 	if (!block)
 		p->p1 = spr->synch_A1 * spr->synch_B1;
@@ -81,9 +81,9 @@ float sprcProcess(sprc_t *spr, const float wt, const float alpha, const int bloc
 		spr->synch_B2 = 0;
 
 	if (spr->synch_A2 == 1)
-		spr->synch_2 = alpha + PWIDTH;
+		spr->synch_2 = alpha + PWIDTH_PU;
 	else
-		spr->synch_2 = spr->synch_2 + PWIDTH;
+		spr->synch_2 = spr->synch_2 + PWIDTH_PU;
 		
 	if (!block)
 		p->p2 = spr->synch_A2 * spr->synch_B2;
@@ -103,9 +103,9 @@ float sprcProcess(sprc_t *spr, const float wt, const float alpha, const int bloc
 		spr->synch_B3 = 0;
 
 	if (spr->synch_A3 == 1)
-		spr->synch_3 = alpha + PWIDTH;
+		spr->synch_3 = alpha + PWIDTH_PU;
 	else
-		spr->synch_3 = spr->synch_3 + PWIDTH;
+		spr->synch_3 = spr->synch_3 + PWIDTH_PU;
 		
 	if (!block)
 		p->p3 = spr->synch_A3 * spr->synch_B3;
@@ -125,9 +125,9 @@ float sprcProcess(sprc_t *spr, const float wt, const float alpha, const int bloc
 		spr->synch_B4 = 0;
 
 	if (spr->synch_A4 == 1)
-		spr->synch_4 = alpha + PWIDTH;
+		spr->synch_4 = alpha + PWIDTH_PU;
 	else
-		spr->synch_4 = spr->synch_4 + PWIDTH;
+		spr->synch_4 = spr->synch_4 + PWIDTH_PU;
 		
 	if (!block)
 		p->p4 = spr->synch_A4 * spr->synch_B4;
@@ -147,9 +147,9 @@ float sprcProcess(sprc_t *spr, const float wt, const float alpha, const int bloc
 		spr->synch_B5 = 0;
 
 	if (spr->synch_A5 == 1)
-		spr->synch_5 = alpha + PWIDTH;
+		spr->synch_5 = alpha + PWIDTH_PU;
 	else
-		spr->synch_5 = spr->synch_5 + PWIDTH;
+		spr->synch_5 = spr->synch_5 + PWIDTH_PU;
 		
 	if (!block)
 		p->p5 = spr->synch_A5 * spr->synch_B5;
@@ -169,9 +169,9 @@ float sprcProcess(sprc_t *spr, const float wt, const float alpha, const int bloc
 		spr->synch_B6 = 0;
 
 	if (spr->synch_A6 == 1)
-		spr->synch_6 = alpha + PWIDTH;
+		spr->synch_6 = alpha + PWIDTH_PU;
 	else
-		spr->synch_6 = spr->synch_6 + PWIDTH;
+		spr->synch_6 = spr->synch_6 + PWIDTH_PU;
 		
 	if (!block)
 		p->p6 = spr->synch_A6 * spr->synch_B6;

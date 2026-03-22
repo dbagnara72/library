@@ -6,7 +6,7 @@
 #ifndef _FIRST_HARMONIC_TRACKER_
 #define _FIRST_HARMONIC_TRACKER_
 
-//#include <math.h>
+#include <math.h>
 #include <math_f.h>
 
 #define FIRST_HARMONIC_TRACKER_A11		0.0f

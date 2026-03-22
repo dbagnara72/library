@@ -8,16 +8,8 @@
 #ifndef _DSPRCTRL_
 #define _DSPRCTRL_
 
-#define MATH_PI_6		0.523598775598299
-#define MATH_PI_3		1.0471975511966
-#define MATH_PI_2		1.5707963267949
-#define MATH_PI			3.14159265358979
-#define MATH_2PI		6.28318530717959
-#define MATH_1_2		0.5
-#define MATH_SQRT3_2	0.866025403784439
-#define MATH_RAD_DEG	57.2957795130823
-#define PWIDTH			110
-
+#include <math.h>
+#include <math_f.h>
 
 typedef struct dspr_ctrl_s {
     float ramp_d_1;
@@ -96,6 +88,6 @@ typedef struct dspr_pd_neg_s {
 
 float dsprProcess(DSPRCTRL *dspr, float wt, float alpha, int block, DSPR_PD_POS *pd_pos, DSPR_PD_NEG *pd_neg);
 
-void twvprProcessSimulink(float wt, float alpha, int block, TWVPR_PY *py, TWVPR_PD *pd);
+void dsprProcessSimulink(float wt, float alpha, int block, DSPR_PD_POS *pd_pos, DSPR_PD_NEG *pd_neg);
 
 #endif

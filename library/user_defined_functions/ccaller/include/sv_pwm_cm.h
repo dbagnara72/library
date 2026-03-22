@@ -6,7 +6,7 @@
 #ifndef _SV_PWM_CM_
 #define _SV_PWM_CM_
 
-//#include <math.h>
+#include <math.h>
 #include <math_f.h>
 
 typedef struct sv_pwm_cm_s
