@@ -1,4 +1,4 @@
-function single_phase_dab = three_phase_dab_hwdata(application_voltage, pwr_nom, fpwm_dab, fres)
+function three_phase_dab = three_phase_dab_hwdata(application_voltage, pwr_nom, fpwm_dab, fres)
 
     %% dclink for three level is splitted into two parts CFi1, CFi2
     % for DAB is used CFi1_dc1, CFi2_dc1, CFi1_dc2, and CFi2_dc2
@@ -8,13 +8,13 @@ function single_phase_dab = three_phase_dab_hwdata(application_voltage, pwr_nom,
 
 
     
-    %% DAB 800V - 250kW
+    %% DAB 800V - 750kW
     udc1 = 800;
     udc2 = 800;
     uac1 = 800;
     uac2 = 800;
-    idc1 = 350;
-    idc2 = 350;
+    idc1 = 350*3;
+    idc2 = 350*3;
     Lm = 1e-3;
     n1 = 6;
     n2 = 6;
@@ -41,18 +41,18 @@ function single_phase_dab = three_phase_dab_hwdata(application_voltage, pwr_nom,
     RLdc_dc2 = 157*0.05*Ldc_dc2; 
 
 
-    dab800V_250kW = hw_dab_three_phase_setup('DAB_800V', pwr_nom, udc1, udc2, uac1, uac2, idc1, idc2, fpwm_dab, fres, ...
+    three_phase_dab_800V_750kW = hw_dab_three_phase_setup('Three_phase_DAB_800V', pwr_nom, udc1, udc2, uac1, uac2, idc1, idc2, fpwm_dab, fres, ...
             n1, n2, Lm, Rfe, Rs1, core_length, core_mur, Cdc_dc1, Cdc1_dc1, Cdc2_dc1, Cdc_dc2, ...
             Cdc1_dc2, Cdc2_dc2, RCdc_dc1, RCdc1_dc1, RCdc2_dc1, RCdc_dc2, RCdc1_dc2, RCdc2_dc2, ...
             Ldc_dc1, Ldc_dc2, RLdc_dc1, RLdc_dc2);
 
-    %% DAB 1200V - 250kW
+    %% DAB 1200V - 750kW
     udc1 = 1200;
     udc2 = 1200;
     uac1 = 1000;
     uac2 = 1000;
-    idc1 = 250;
-    idc2 = 250;
+    idc1 = 250*3;
+    idc2 = 250*3;
 
     Lm = 1e-3;
     n1 = 6;
@@ -78,21 +78,21 @@ function single_phase_dab = three_phase_dab_hwdata(application_voltage, pwr_nom,
     Ldc_dc2 = 250e-6; 
     RLdc_dc2 = 157*0.05*Ldc_dc2; 
 
-    dab1200V_250kW = hw_dab_three_phase_setup('DAB_1200V', pwr_nom, udc1, udc2, uac1, uac2, idc1, idc2, fpwm_dab, fres, ...
+    three_phase_dab_1200V_750kW = hw_dab_three_phase_setup('Three_phase_DAB_1200V', pwr_nom, udc1, udc2, uac1, uac2, idc1, idc2, fpwm_dab, fres, ...
             n1, n2, Lm, Rfe, Rs1, core_length, core_mur, Cdc_dc1, Cdc1_dc1, Cdc2_dc1, Cdc_dc2, ...
             Cdc1_dc2, Cdc2_dc2, RCdc_dc1, RCdc1_dc1, RCdc2_dc1, RCdc_dc2, RCdc1_dc2, RCdc2_dc2, ...
             Ldc_dc1, Ldc_dc2, RLdc_dc1, RLdc_dc2);   
 
     %% setup outputs
     if application_voltage == 690
-        single_phase_dab = dab1200V_250kW;
-        dab1200V_250kW.displayInfo();
+        three_phase_dab = three_phase_dab_1200V_750kW;
+        three_phase_dab_1200V_750kW.displayInfo();
     elseif application_voltage == 480
-        single_phase_dab = dab800V_250kW;
-        dab800V_250kW.displayInfo();
+        three_phase_dab = three_phase_dab_800V_750kW;
+        three_phase_dab_800V_750kW.displayInfo();
     else
-        single_phase_dab = dab800V_250kW;
-        dab800V_250kW.displayInfo();
+        three_phase_dab = three_phase_dab_800V_750kW;
+        three_phase_dab_800V_750kW.displayInfo();
     end
 
 end
