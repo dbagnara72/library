@@ -9,7 +9,8 @@ classdef hw_cllc_single_phase_setup
         idc1_nom        double {mustBePositive} % Nominal DC1 current [A]
         idc2_nom        double {mustBePositive} % Nominal DC2 current [A]
         fpwm_base       double {mustBePositive} % Base switching frequency [Hz]
-        fres_base         double {mustBePositive} % Base resonance frequency [Hz]
+        fres_base       double {mustBePositive} % Base resonance frequency [Hz]
+
         Cs1             double {mustBePositive} % Primary side resonance capacitor [F]
         Ls1             double {mustBePositive} % Primary side resonance inductance [H]
         n1              double {mustBePositive} % Transformer primary side number of turns
@@ -51,8 +52,10 @@ classdef hw_cllc_single_phase_setup
         udc1_bez        double {mustBePositive} % Normalization primary side voltage [V]
         udc2_bez        double {mustBePositive} % Normalization secondary side voltage [V]
 
+        Rac             double {mustBePositive} % Internal tank impedance [Ohm]
         Ls              double {mustBePositive} % Internal Ls tank [H]
         Cs              double {mustBePositive} % Internal Cs tank [F]
+        Q
     end
     
     methods
@@ -77,8 +80,11 @@ classdef hw_cllc_single_phase_setup
                 obj.Rfe = Rfe;
 
                 n12 = obj.n1/obj.n2;
-                obj.Ls = (obj.udc1_nom^2/(2*pi*obj.fres_base)/obj.pwr_nom*pi/4);
-                obj.Cs = 1/obj.Ls/(2*pi*obj.fres_base)^2;
+
+                obj.Q = 1;
+                obj.Rac = (obj.udc1_nom^2/obj.pwr_nom/2)*8/pi^2;
+                obj.Ls = obj.Q*obj.Rac/(2*pi*obj.fres_base);
+                obj.Cs = 1/(obj.Q*obj.Rac*(2*pi*obj.fres_base));
 
                 obj.Rs1 = Rs1;
                 obj.Rs2 = obj.Rs1 / (n12)^2;
