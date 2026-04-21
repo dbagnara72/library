@@ -1,14 +1,15 @@
 function frt_data = frt_settings(test_index, test_subindex, asymmetric_error_type, ...
-    enable_frt_1, enable_frt_2, start_time_LVRT)
+    enable_frt_1, enable_frt_2, start_time_LVRT, deepPOSxi, deepPOSeta, deepNEGxi, deepNEGeta)
 
 %% FRT Settings
 frt_data.enable_frt_1 = enable_frt_1;
 frt_data.enable_frt_2 = enable_frt_2;
 
 %% FRT data for frt type 2
-frt_data.deepPOSxi = 0.5;
-frt_data.deepNEGxi = 0;
-frt_data.deepNEGeta = 0.5;
+frt_data.deepPOSxi = deepPOSxi;
+frt_data.deepPOSeta = deepPOSeta;
+frt_data.deepNEGxi = deepNEGxi;
+frt_data.deepNEGeta = deepNEGeta;
 
 %% FRT, and other fault timing settings
 frt_data.test_index    = test_index;
