@@ -30,8 +30,8 @@ switch frt_data.test_index
                 Amplitude_V = Amplitude_U;
                 Amplitude_W = Amplitude_U;
                 Phase_shift = 0;
-                % error_length = 760e-3;
-                error_length = 250e-3;
+                error_length = 760e-3;
+                % error_length = 250e-3;
                 P_load_norm = 0.5;
                 Q_load_norm = 0;
                 k_lvrt = 2;
@@ -50,8 +50,8 @@ switch frt_data.test_index
                     Amplitude_W = Amplitude_V;
                     Phase_shift = delta_phi;
                 end
-                error_length = 250e-3;
-                % error_length = 915e-3;
+                % error_length = 250e-3;
+                error_length = 915e-3;
                 P_load_norm = 1;
                 Q_load_norm = 0;
                 k_lvrt = 2;
