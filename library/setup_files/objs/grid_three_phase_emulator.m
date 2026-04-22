@@ -6,6 +6,8 @@
 % u1_nom = application;
 % u2_nom = application;
 % f_nom = 50;
+% eq_grid_inductance = 75e-6;
+% eq_grid_resistance = 1e-3;
 % eta = 98;
 % ucc = 4.6;
 % i1m = 10; % magnetization current
@@ -26,7 +28,8 @@
 
 
 % grid_emu = grid_three_phase_emulator(name, pwr_nom, application, u1_nom, u2_nom, f_nom, ...
-% eta, ucc, i1m, p_iron, n1, n2, core_area, core_length, mur, 1,0,0,0);
+%               eq_grid_inductance, eq_grid_resistance, eta, ucc, i1m, p_iron, n1, n2, ...
+%               core_area, core_length, mur, 1,0,0,0);
 
 %% class definition
 classdef grid_three_phase_emulator
@@ -41,6 +44,8 @@ classdef grid_three_phase_emulator
         n1                  double {mustBePositive} % Transformer nominal secondary side current [A]
         n2                  double {mustBePositive} % Transformer nominal secondary side current [A]
         fgrid_nom           double {mustBePositive} % Nominal frequency [Hz]
+        eq_grid_inductance  double {mustBePositive} % Equivalent Grid Inductance [H]
+        eq_grid_resistance  double {mustBePositive} % Equivalent Grid Resistance [Ohm]
         omega_grid_nom      double {mustBePositive} % Nominal pulsation [rad/s]
         trafo
         udc_nom             double {mustBePositive} % Nominal DC-link voltage [V]
@@ -68,7 +73,7 @@ classdef grid_three_phase_emulator
     methods
 
         function obj = grid_three_phase_emulator(name, pwr_nom, application_voltage, us1, us2, fgrid, ...
-                eta, ucc, i1m, p_iron, n1, n2, core_area, core_length, mur, ...
+                eq_grid_inductance, eq_grid_resistance, eta, ucc, i1m, p_iron, n1, n2, core_area, core_length, mur, ...
                 up_xi_pu_ref, up_eta_pu_ref, un_xi_pu_ref, un_eta_pu_ref)
             if nargin > 0
                 obj.name = name;
@@ -80,6 +85,8 @@ classdef grid_three_phase_emulator
                 obj.is_secondary_nom = pwr_nom/sqrt(3)/us2;
                 obj.fgrid_nom = fgrid;
                 obj.omega_grid_nom = fgrid * 2*pi;
+                obj.eq_grid_inductance = eq_grid_inductance;
+                obj.eq_grid_resistance = eq_grid_resistance;
                 obj.trafo =  three_phase_transformer_setup(name, pwr_nom, us1, us2, fgrid, eta, ...
                 ucc, i1m, p_iron, n1, n2, core_area, core_length, mur);
 
