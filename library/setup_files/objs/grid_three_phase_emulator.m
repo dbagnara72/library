@@ -25,9 +25,9 @@
 % Lm1 = (n1^2 * mu0 * mur * core_area) / core_length;
 % Lm1 = u1_nom/sqrt(3)/i1m/(2*pi*f_nom);
 % i1m = u1_nom/sqrt(3)/Lm1/(2*pi*f_nom);
+% delta_star = 1;
 
-
-% grid_emu = grid_three_phase_emulator(name, pwr_nom, application, u1_nom, u2_nom, f_nom, ...
+% grid_emu = grid_three_phase_emulator(name, delta_star, pwr_nom, application, u1_nom, u2_nom, f_nom, ...
 %               eq_grid_inductance, eq_grid_resistance, eta, ucc, i1m, p_iron, n1, n2, ...
 %               core_area, core_length, mur, 1,0,0,0);
 
@@ -35,6 +35,7 @@
 classdef grid_three_phase_emulator
     properties
         name                string
+        delta_star          % Dyn delta_star == 1, Yyn delta_star == 0
         pwr_nom             double {mustBePositive} % Nominal power [W]
         application_voltage double {mustBePositive} % application voltage: 690V, 480V or 400V [V]
         us_primary_nom      double {mustBePositive} % Transformer nominal primary side voltage [V]
@@ -72,7 +73,7 @@ classdef grid_three_phase_emulator
     
     methods
 
-        function obj = grid_three_phase_emulator(name, pwr_nom, application_voltage, us1, us2, fgrid, ...
+        function obj = grid_three_phase_emulator(name, delta_star, pwr_nom, application_voltage, us1, us2, fgrid, ...
                 eq_grid_inductance, eq_grid_resistance, eta, ucc, i1m, p_iron, n1, n2, core_area, core_length, mur, ...
                 up_xi_pu_ref, up_eta_pu_ref, un_xi_pu_ref, un_eta_pu_ref)
             if nargin > 0
@@ -87,7 +88,7 @@ classdef grid_three_phase_emulator
                 obj.omega_grid_nom = fgrid * 2*pi;
                 obj.eq_grid_inductance = eq_grid_inductance;
                 obj.eq_grid_resistance = eq_grid_resistance;
-                obj.trafo =  three_phase_transformer_setup(name, pwr_nom, us1, us2, fgrid, eta, ...
+                obj.trafo =  three_phase_transformer_setup(name, delta_star, pwr_nom, us1, us2, fgrid, eta, ...
                 ucc, i1m, p_iron, n1, n2, core_area, core_length, mur);
 
                 obj.u1bez =  obj.us_primary_nom * sqrt(2/3);

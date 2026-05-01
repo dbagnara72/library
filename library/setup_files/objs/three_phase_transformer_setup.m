@@ -13,9 +13,8 @@
 % n1 = floor(n2*sqrt(3));
 % core_area = 0.05;
 % core_length = 2.5;
-% mur = mu0;
 % mur = 10e3;
-% trafo = three_phase_transformer_setup(name, pwr_nom, u1_nom, u2_nom, f_nom, eta, ucc, ...
+% trafo = three_phase_transformer_setup(name, delta_star, pwr_nom, u1_nom, u2_nom, f_nom, eta, ucc, ...
 % i1m, p_iron, n1, n2, core_area, core_length, mur);
 
 % two simple calculation:
@@ -26,6 +25,7 @@
 classdef three_phase_transformer_setup
     properties
         name                string
+        delta_star          % Dyn delta_star == 1, Yyn delta_star == 0
         pwr_nom             double {mustBePositive} % Nominal power [W]
         u1_nom              double {mustBePositive} % Transformer nominal primary side voltage [V]
         i1_nom              double {mustBePositive} % Transformer nominal primary side current [A]
@@ -56,10 +56,11 @@ classdef three_phase_transformer_setup
     
     methods
 
-        function obj = three_phase_transformer_setup(name, pwr_nom, u1_nom, u2_nom, f_nom, eta, ...
+        function obj = three_phase_transformer_setup(name, delta_star, pwr_nom, u1_nom, u2_nom, f_nom, eta, ...
                 ucc, i1m, p_iron, n1, n2, core_area, core_length, mur)
             if nargin > 0
                 obj.name = name;
+                obj.delta_star = delta_star;
                 obj.pwr_nom = pwr_nom;
                 obj.u1_nom = u1_nom;
                 obj.i1_nom = obj.pwr_nom/sqrt(3)/obj.u1_nom;
@@ -75,7 +76,11 @@ classdef three_phase_transformer_setup
                 obj.n2 = n2;
                 
                 obj.Lsigma = (obj.u1_nom*obj.ucc/100/sqrt(3)/obj.i1_nom/(2*pi*obj.f_nom));
-                obj.Ld1 = 3/2 * obj.Lsigma; % Dy transformer
+                if obj.delta_star == 1
+                    obj.Ld1 = 3/2 * obj.Lsigma; % Dy transformer
+                else
+                    obj.Ld1 = 1/2 * obj.Lsigma; % Yy transformer
+                end
                 obj.Rd1 = 0.5 * ((1 - obj.eta/100) * obj.pwr_nom / 3 / obj.i1_nom^2); 
                 obj.Lm1 = obj.u1_nom/sqrt(3)/obj.i1m/(2*pi*obj.f_nom);
                 
