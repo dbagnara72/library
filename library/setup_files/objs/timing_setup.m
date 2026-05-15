@@ -35,28 +35,35 @@ classdef timing_setup
         fPWM_DAB
         TRGO_DAB_double_update
         tPWM_DAB
+        fPWM_PSFBC
+        TRGO_PSFBC_double_update
+        tPWM_PSFBC
         fPWM_CLLC
         TRGO_CLLC_double_update
         tPWM_CLLC
         ts_afe
         ts_inv
         ts_dab
+        ts_psfbc
         ts_cllc
         tc
         decimation_tc
         z_afe
         z_inv
         z_dab
+        z_psfbc
         z_cllc
 
         dead_time_AFE
         dead_time_INV
         dead_time_DAB
+        dead_time_PSFBC
         dead_time_CLLC
 
         minimum_pulse_time_AFE
         minimum_pulse_time_INV
         minimum_pulse_time_DAB
+        minimum_pulse_time_PSFBC
         minimum_pulse_time_CLLC
 
         delayAFE_modB
@@ -66,14 +73,15 @@ classdef timing_setup
         Ns_afe
         Ns_inv
         Ns_dab
+        Ns_psfbc
         Ns_cllc
         Nc
     end
     
     methods
-        function obj = timing_setup(fpwm_afe, trgo_afe, fpwm_inv, trgo_inv, fpwm_dab, trgo_dab, ...
+        function obj = timing_setup(fpwm_afe, trgo_afe, fpwm_inv, trgo_inv, fpwm_dab, trgo_dab, fpwm_psfbc, trgo_psfbc, ...
                 fpwm_cllc, trgo_cllc, t_measure, tc_factor, tc_decimation, delay_pwm, dead_time_afe, ...
-                dead_time_inv, dead_time_dab, dead_time_cllc)
+                dead_time_inv, dead_time_dab, dead_time_psfbc, dead_time_cllc)
             if nargin > 0
                 
                 obj.fPWM_AFE = fpwm_afe;
@@ -103,6 +111,15 @@ classdef timing_setup
                     obj.ts_dab = obj.tPWM_DAB;
                 end
                 
+                obj.fPWM_PSFBC = fpwm_psfbc;
+                obj.TRGO_PSFBC_double_update = trgo_psfbc;
+                obj.tPWM_PSFBC = 1/obj.fPWM_PSFBC;
+                if obj.TRGO_PSFBC_double_update
+                    obj.ts_psfbc = obj.tPWM_PSFBC/2;
+                else
+                    obj.ts_psfbc = obj.tPWM_PSFBC;
+                end
+
                 obj.fPWM_CLLC = fpwm_cllc;
                 obj.TRGO_CLLC_double_update = trgo_cllc;
                 obj.tPWM_CLLC = 1/obj.fPWM_CLLC;
@@ -118,16 +135,19 @@ classdef timing_setup
                 obj.z_afe = tf('z',obj.ts_afe);
                 obj.z_inv = tf('z',obj.ts_inv);
                 obj.z_dab = tf('z',obj.ts_dab);
+                obj.z_psfbc = tf('z',obj.ts_psfbc);
                 obj.z_cllc = tf('z',obj.ts_cllc);
                 
                 obj.dead_time_AFE = dead_time_afe;
                 obj.dead_time_INV = dead_time_inv;
                 obj.dead_time_DAB = dead_time_dab;
+                obj.dead_time_PSFBC = dead_time_psfbc;
                 obj.dead_time_CLLC = dead_time_cllc;
                 
                 obj.minimum_pulse_time_AFE = 1e-6;
                 obj.minimum_pulse_time_INV = 1e-6;
                 obj.minimum_pulse_time_DAB = 1e-6;
+                obj.minimum_pulse_time_PSFBC = 1e-6;
                 obj.minimum_pulse_time_CLLC = 1e-6;
                 
                 obj.delayAFE_modB = 2*pi*obj.fPWM_AFE*delay_pwm; 
@@ -138,6 +158,7 @@ classdef timing_setup
                 obj.Ns_afe = ceil(obj.t_measure/obj.ts_afe);
                 obj.Ns_inv = ceil(obj.t_measure/obj.ts_inv);
                 obj.Ns_dab = ceil(obj.t_measure/obj.ts_dab);
+                obj.Ns_psfbc = ceil(obj.t_measure/obj.ts_psfbc);
                 obj.Ns_cllc = ceil(obj.t_measure/obj.ts_cllc);
 
             end
