@@ -75,7 +75,7 @@ classdef hw_psfbc_single_phase_setup
                 obj.Rfe = Rfe;
 
                 n12 = obj.n1/obj.n2;
-                obj.Ls = (obj.udc1_nom^2/obj.fpwm_base/obj.pwr_nom/4/pi); 
+                obj.Ls = (obj.udc1_nom^2/obj.fpwm_base/obj.pwr_nom/8/2); 
 
                 obj.Rs1 = Rs1;
                 obj.Rs2 = obj.Rs1 / (n12)^2;

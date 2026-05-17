@@ -10,26 +10,26 @@ function single_phase_psfbc = single_phase_psfbc_hwdata(application_voltage, pwr
 
 
     
-    %% PSFBC 800V - 275kW
+    %% PSFBC 800V - 325kW
     udc1 = 800;
-    udc2 = 30;
+    udc2 = 50;
     uac1 = 800;
-    uac2 = 30;
-    idc1 = 350;
+    uac2 = 50;
+    idc1 = pwr_nom/udc1;
     idc2 = 12e3;
     Lm = 1e-3;
-    n1 = 40;
+    n1 = 32;
     n2 = 2;
 
     Rfe = 1e3;
     Rs1 = 1e-3;
 
     core_length = 1;
-    core_mur = 1e4;
+    core_mur = 70;
 
     Cdc_dc1 = 1.2e-3; 
     Cdc1_dc1 = 2*Cdc_dc1; Cdc2_dc1 = 2*Cdc_dc1;
-    Cdc_dc2 = 1.2e-3; 
+    Cdc_dc2 = 12e-3; 
     Cdc1_dc2 = 2*Cdc_dc2; Cdc2_dc2 = 2*Cdc_dc2;
     
     RCdc_dc1 = 1e-3; 
@@ -39,7 +39,7 @@ function single_phase_psfbc = single_phase_psfbc_hwdata(application_voltage, pwr
     
     Ldc_dc1 = 250e-6; 
     RLdc_dc1 = 157*0.02*Ldc_dc1; 
-    Ldc_dc2 = 25e-6; 
+    Ldc_dc2 = Ldc_dc1/(n1/n2)^2; 
     RLdc_dc2 = 157*0.01*Ldc_dc2; 
 
 
