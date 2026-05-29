@@ -2,7 +2,9 @@ function data = lithium_ion_battery_setup(nominal_voltage, nominal_power, soc_in
 
     data.ubattery = nominal_voltage;
     data.pnom = nominal_power;
-    
+    data.nominal_current = data.pnom/data.ubattery;
+    data.nominal_efficiency = 0.95;
+
     data.typical_cell_voltage = 3.6;
     data.number_of_cells = floor(nominal_voltage/data.typical_cell_voltage)-1; % nominal is 100
     
@@ -28,8 +30,8 @@ function data = lithium_ion_battery_setup(nominal_voltage, nominal_power, soc_in
     data.Elog = -0.05;
     data.alpha = 35;
     
-    data.R0 = 0.035;
-    data.R1 = 0.035;
+    data.R0 = 1/2 * data.pnom*(1-data.nominal_efficiency)/data.nominal_current^2;
+    data.R1 = data.R0;
     data.C1 = 0.5;
     data.M = 125;
     
