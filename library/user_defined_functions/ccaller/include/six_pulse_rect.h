@@ -1,37 +1,49 @@
 /*
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2025 Davide Bagnara
+ *
+ * six_pulse_rect.h
+ * Firing pulse generator for a six-pulse thyristor bridge.
  */
 
-/* six pulses rectifier */
+#ifndef SIX_PULSE_RECT_H
+#define SIX_PULSE_RECT_H
 
 #include <math.h>
-#include <math_f.h>
+#include "math_f.h"
 
+#ifndef PWIDTH_PU
+#define PWIDTH_PU  (0.1745f)   /* pulse width [rad], ~10 deg */
+#endif
 
 typedef struct sprc_s {
-    float ramp_1; float ramp_2; float ramp_3; 
-	float ramp_4; float ramp_5; float ramp_6;  
-	
-	int synch_A1; int synch_A2; int synch_A3; 
-	int synch_A4; int synch_A5; int synch_A6;	
-	
-	int synch_B1; int synch_B2; int synch_B3; 
-	int synch_B4; int synch_B5; int synch_B6;
 
-	int synch_1; int synch_2; int synch_3;
-	int synch_4; int synch_5; int synch_6;
+    /* Sawtooth ramps [0, 2pi), one per thyristor */
+    float ramp_1;  float ramp_2;  float ramp_3;
+    float ramp_4;  float ramp_5;  float ramp_6;
+
+    /* Level-detector outputs: 1 when ramp >= alpha */
+    int synch_A1;  int synch_A2;  int synch_A3;
+    int synch_A4;  int synch_A5;  int synch_A6;
+
+    /* Pulse-width limiter outputs: 1 when ramp <= threshold */
+    int synch_B1;  int synch_B2;  int synch_B3;
+    int synch_B4;  int synch_B5;  int synch_B6;
+
+    /* Pulse-width thresholds — FLOAT (was int: truncation bug fixed) */
+    float synch_1;  float synch_2;  float synch_3;
+    float synch_4;  float synch_5;  float synch_6;
+
 } sprc_t;
 
 typedef struct spr_p_s {
-	int p1;
-	int p2;
-	int p3;
-	int p4;
-	int p5;
-	int p6;
+    int p1;  int p2;  int p3;
+    int p4;  int p5;  int p6;
 } spr_p_t;
 
-float sprcProcess(sprc_t *spr, const float wt, const float alpha, const int block, spr_p_t *p);
+/* void return (was float with no return statement) */
+void sprcProcess(sprc_t *spr, float wt, float alpha, int block, spr_p_t *p);
 
-void sprcProcessSimulink(const float wt, const float alpha, const int block, spr_p_t *p);
+void sprcProcessSimulink(float wt, float alpha, int block, spr_p_t *p);
+
+#endif /* SIX_PULSE_RECT_H */
