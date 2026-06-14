@@ -23,21 +23,9 @@ SOFTWARE.
 /* Twelve pulses rectifier */
 
 #include "../include/twelve_pulse_rect.h"
-#include <string.h>  /* memset */
 
-/* FIX #1: added twvprInit() to zero-initialize the control structure.
-   Must be called once before the first twvprProcess() invocation when
-   the struct is NOT statically allocated (i.e. caller manages lifetime). */
-void twvprInit(TWVPRCTRL *twvpr)
-{
-    memset(twvpr, 0, sizeof(TWVPRCTRL));
-}
-
-/* FIX #1: return type changed from float to void — function never returned
-   a value, causing undefined behaviour on any compiler that actually uses
-   the (garbage) return value. */
-void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, 
-	const int block, TWVPR_PY *py, TWVPR_PD *pd)
+// ------------------------------------------------------------------------------
+float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const int block, TWVPR_PY *py, TWVPR_PD *pd)
 {
 	float phaseshift = 0;
 	
@@ -92,15 +80,7 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_dA1 == 1)
 		twvpr->synch_d1 = alpha + PWIDTH_PU;
 	else
-	{
-		/* FIX #3: clamp synch_dN to MATH_2PI to prevent unbounded growth
-		   when synch_dA is 0 for many consecutive samples. Without this,
-		   synch_d1 would exceed 2pi and the ramp <= synch comparison would
-		   stay permanently true, locking the pulse output high. */
-		twvpr->synch_d1 += PWIDTH_PU;
-		if (twvpr->synch_d1 > MATH_2PI)
-			twvpr->synch_d1 = MATH_2PI;
-	}
+		twvpr->synch_d1 = twvpr->synch_d1 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_1 = twvpr->synch_dA1 * twvpr->synch_dB1;
@@ -122,11 +102,7 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_dA2 == 1)
 		twvpr->synch_d2 = alpha + PWIDTH_PU;
 	else
-	{
-		twvpr->synch_d2 += PWIDTH_PU;
-		if (twvpr->synch_d2 > MATH_2PI)
-			twvpr->synch_d2 = MATH_2PI;
-	}
+		twvpr->synch_d2 = twvpr->synch_d2 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_2 = twvpr->synch_dA2 * twvpr->synch_dB2;
@@ -148,11 +124,7 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_dA3 == 1)
 		twvpr->synch_d3 = alpha + PWIDTH_PU;
 	else
-	{
-		twvpr->synch_d3 += PWIDTH_PU;
-		if (twvpr->synch_d3 > MATH_2PI)
-			twvpr->synch_d3 = MATH_2PI;
-	}
+		twvpr->synch_d3 = twvpr->synch_d3 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_3 = twvpr->synch_dA3 * twvpr->synch_dB3;
@@ -174,11 +146,7 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_dA4 == 1)
 		twvpr->synch_d4 = alpha + PWIDTH_PU;
 	else
-	{
-		twvpr->synch_d4 += PWIDTH_PU;
-		if (twvpr->synch_d4 > MATH_2PI)
-			twvpr->synch_d4 = MATH_2PI;
-	}
+		twvpr->synch_d4 = twvpr->synch_d4 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_4 = twvpr->synch_dA4 * twvpr->synch_dB4;
@@ -200,11 +168,7 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_dA5 == 1)
 		twvpr->synch_d5 = alpha + PWIDTH_PU;
 	else
-	{
-		twvpr->synch_d5 += PWIDTH_PU;
-		if (twvpr->synch_d5 > MATH_2PI)
-			twvpr->synch_d5 = MATH_2PI;
-	}
+		twvpr->synch_d5 = twvpr->synch_d5 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_5 = twvpr->synch_dA5 * twvpr->synch_dB5;
@@ -226,11 +190,7 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_dA6 == 1)
 		twvpr->synch_d6 = alpha + PWIDTH_PU;
 	else
-	{
-		twvpr->synch_d6 += PWIDTH_PU;
-		if (twvpr->synch_d6 > MATH_2PI)
-			twvpr->synch_d6 = MATH_2PI;
-	}
+		twvpr->synch_d6 = twvpr->synch_d6 + PWIDTH_PU;
 		
 	if (!block)
 		pd->pd_6 = twvpr->synch_dA6 * twvpr->synch_dB6;
@@ -252,11 +212,7 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_yA1 == 1)
 		twvpr->synch_y1 = alpha + PWIDTH_PU;
 	else
-	{
-		twvpr->synch_y1 += PWIDTH_PU;
-		if (twvpr->synch_y1 > MATH_2PI)
-			twvpr->synch_y1 = MATH_2PI;
-	}
+		twvpr->synch_y1 = twvpr->synch_y1 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_1 = twvpr->synch_yA1 * twvpr->synch_yB1;
@@ -278,11 +234,7 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_yA2 == 1)
 		twvpr->synch_y2 = alpha + PWIDTH_PU;
 	else
-	{
-		twvpr->synch_y2 += PWIDTH_PU;
-		if (twvpr->synch_y2 > MATH_2PI)
-			twvpr->synch_y2 = MATH_2PI;
-	}
+		twvpr->synch_y2 = twvpr->synch_y2 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_2 = twvpr->synch_yA2 * twvpr->synch_yB2;
@@ -304,11 +256,7 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_yA3 == 1)
 		twvpr->synch_y3 = alpha + PWIDTH_PU;
 	else
-	{
-		twvpr->synch_y3 += PWIDTH_PU;
-		if (twvpr->synch_y3 > MATH_2PI)
-			twvpr->synch_y3 = MATH_2PI;
-	}
+		twvpr->synch_y3 = twvpr->synch_y3 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_3 = twvpr->synch_yA3 * twvpr->synch_yB3;
@@ -330,11 +278,7 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_yA4 == 1)
 		twvpr->synch_y4 = alpha + PWIDTH_PU;
 	else
-	{
-		twvpr->synch_y4 += PWIDTH_PU;
-		if (twvpr->synch_y4 > MATH_2PI)
-			twvpr->synch_y4 = MATH_2PI;
-	}
+		twvpr->synch_y4 = twvpr->synch_y4 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_4 = twvpr->synch_yA4 * twvpr->synch_yB4;
@@ -356,11 +300,7 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_yA5 == 1)
 		twvpr->synch_y5 = alpha + PWIDTH_PU;
 	else
-	{
-		twvpr->synch_y5 += PWIDTH_PU;
-		if (twvpr->synch_y5 > MATH_2PI)
-			twvpr->synch_y5 = MATH_2PI;
-	}
+		twvpr->synch_y5 = twvpr->synch_y5 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_5 = twvpr->synch_yA5 * twvpr->synch_yB5;
@@ -382,21 +322,15 @@ void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha,
 	if (twvpr->synch_yA6 == 1)
 		twvpr->synch_y6 = alpha + PWIDTH_PU;
 	else
-	{
-		twvpr->synch_y6 += PWIDTH_PU;
-		if (twvpr->synch_y6 > MATH_2PI)
-			twvpr->synch_y6 = MATH_2PI;
-	}
+		twvpr->synch_y6 = twvpr->synch_y6 + PWIDTH_PU;
 		
 	if (!block)
 		py->py_6 = twvpr->synch_yA6 * twvpr->synch_yB6;
 	else
 		py->py_6 = 0;
+	
 }
 
-/* FIX #2: twvpr_inst is static, so zero-initialised by the C standard —
-   no UB here. twvprInit() is still exposed for callers that manage the
-   struct lifetime externally. */
 void twvprProcessSimulink(const float wt, const float alpha, const int block, TWVPR_PY *py, TWVPR_PD *pd)
 {
 	static TWVPRCTRL twvpr_inst; 
@@ -406,3 +340,14 @@ void twvprProcessSimulink(const float wt, const float alpha, const int block, TW
 	*py = py_inst;
 	*pd = pd_inst;
 }
+
+
+
+
+
+
+
+
+
+
+

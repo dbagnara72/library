@@ -85,7 +85,8 @@ typedef struct twvpr_py_s {
 } twvpr_py_t;
 #define TWVPR_PY twvpr_py_t
 
-float twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, const int block, TWVPR_PY *py, TWVPR_PD *pd);
+void twvprProcess(TWVPRCTRL *twvpr, const float wt, const float alpha, 
+	const int block, TWVPR_PY *py, TWVPR_PD *pd);
 
 void twvprProcessSimulink(const float wt, const float alpha, const int block, TWVPR_PY *py, TWVPR_PD *pd);
 
