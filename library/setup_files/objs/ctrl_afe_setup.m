@@ -174,10 +174,10 @@ classdef ctrl_afe_setup
         end
 
         function out = rms_setup(obj)
-            rms_perios = 1;
-            out.n1 = 2*pi * rms_perios / obj.omega_base / obj.ts;
-            rms_perios = 10;
-            out.n10 = 2*pi * rms_perios / obj.omega_base / obj.ts;
+            rms_periods = 1;
+            out.n1 = 2*pi * rms_periods / obj.omega_base / obj.ts;
+            rms_periods = 10;
+            out.n10 = 2*pi * rms_periods / obj.omega_base / obj.ts;
         end
 
     end
