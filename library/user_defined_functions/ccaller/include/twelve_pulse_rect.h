@@ -10,6 +10,7 @@
 
 #include <math.h>
 #include <math_f.h>
+#define PWIDTH_PU  (1.047197551196598f)   /* pulse width [rad], ~60 deg */
 
 
 typedef struct twvprctrl_s {

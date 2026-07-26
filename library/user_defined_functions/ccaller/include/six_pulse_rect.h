@@ -12,11 +12,8 @@
 #include <math.h>
 #include "math_f.h"
 
-#ifndef PWIDTH_PU
-//#define PWIDTH_PU  (0.1745f)   /* pulse width [rad], ~10 deg */
-#define PWIDTH_PU  (1.9199f)   /* pulse width [rad], ~110 deg */
-
-#endif
+// #define PWIDTH_PU  (1.047197551196598f)   /* pulse width [rad], ~60 deg */
+#define PWIDTH_PU  (1.9f)   /* pulse width [rad], ~60 deg */
 
 typedef struct sprc_s {
 

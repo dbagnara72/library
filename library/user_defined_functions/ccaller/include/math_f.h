@@ -35,6 +35,5 @@
 #define MATH_1_2		            0.5f
 #define MATH_RAD_DEG	            57.2957795130823f
 #define PWIDTH			            110
-#define PWIDTH_PU		            1.9f
 
 #endif
