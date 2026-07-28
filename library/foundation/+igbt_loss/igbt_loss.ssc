@@ -1,0 +1,236 @@
+component igbt_loss
+% IGBT with datasheet-based loss accounting and drift-region tail current
+%
+% Behavioural (energy-based) IGBT switch intended for loss and thermal
+% studies of hard-switched converters. The switching transient itself is
+% NOT resolved: the device commutates in one solver step and the
+% associated energies are taken from datasheet lookup tables. What IS
+% resolved explicitly is the drift-region excess-carrier tail current at
+% turn-off, so its effect on the current waveform and on the dissipated
+% energy is visible in the simulation.
+%
+% Ports
+%   C     collector, electrical
+%   E     emitter,   electrical
+%   H     junction thermal node (conduction + switching losses injected here)
+%   G     gate command, physical signal [V] (device is ON when G > Vg_on)
+%
+% Loss model
+%   conduction : v = Vce0(Tj) + Rce(Tj)*i
+%   turn-on    : Eon  = Eon_tab(Ic,Tj) *(Vdc/Vref)^kv_on *(Rg/Rg_ref)^krg_on
+%   turn-off   : Eoff = Eoff_tab(Ic,Tj)*(Vdc/Vref)^kv_off*(Rg/Rg_ref)^krg_off
+%
+%
+% Sampling
+%   Ic for Eoff is sampled at the gate falling edge; Ic for Eon is
+%   sampled t_meas after the gate rising edge, once the current has
+%   commutated into the device. Vdc is sampled at the rising edge, i.e.
+%   while the device is still blocking.
+%
+% Requires R2019a or later (intermediates block).
+
+nodes
+    C = foundation.electrical.electrical;  % C:left
+    E = foundation.electrical.electrical;  % E:right
+    H = foundation.thermal.thermal;        % H:left
+end
+
+inputs
+    G = {0, 'V'};                          % G:left
+end
+
+parameters
+    % ---- gate command -------------------------------------------------
+    Vg_on   = {5,      'V'  };  % Gate command threshold
+    % ---- static on-state --------------------------------------------
+    Vce0    = {0.85,   'V'  };  % Collector-emitter knee voltage at Tref
+    Rce     = {7e-3,   'Ohm'};  % On-state slope resistance at Tref
+    R_off   = {1e8,    'Ohm'};  % Off-state (leakage) resistance
+
+    % ---- switching energy tables -------------------------------------
+    i_tab    = {[0 200 400 600 800 1000 1200],   'A'};  % Current breakpoints
+    T_tab    = {[298.15 398.15],            'K'};  % Temperature breakpoints
+    
+    % rows follow i_tab, columns follow T_tab
+    Eon_tab  = {[0 0; 20e-3 26e-3; 42e-3 54e-3; 66e-3 85e-3; ...
+                 92e-3 118e-3; 150e-3 190e-3; 215e-3 270.0e-3], 'J'};  % Turn-on energy table
+    Eoff_tab = {[0 0; 24e-3 30e-3; 46e-3 58e-3; 70e-3 88e-3; ...
+                 95e-3 120e-3; 152e-3 192e-3; 210e-3 265e-3], 'J'};  % Turn-off energy table
+    
+    % ---- scaling away from the datasheet test point ------------------
+    Vref     = {900,   'V'  };  % DC-link voltage of the tabulated data
+    kv_on    = {1.0,   '1'  };  % Voltage exponent, turn-on
+    kv_off   = {1.0,   '1'  };  % Voltage exponent, turn-off
+    kv_rr    = {0.6,   '1'  };  % Voltage exponent, reverse recovery
+    Rg_ref   = {10,    'Ohm'};  % Gate resistance of the tabulated data
+    Rg       = {10,    'Ohm'};  % Actual gate resistance
+    krg_on   = {0.45,  '1'  };  % Gate-resistance exponent, turn-on
+    krg_off  = {0.12,  '1'  };  % Gate-resistance exponent, turn-off
+    % ---- drift-region tail ------------------------------------------
+    k_tail   = {0.12,  '1'  };  % Tail current as a fraction of Ic (0 disables)
+    tau_tail = {0.6e-6,'s'  };  % Tail time constant at Tref
+    a_tau    = {4e-3,  '1/K'};  % Temperature coefficient of tau_tail
+    % ---- numerics ----------------------------------------------------
+    tau_smp  = {50e-9, 's'  };  % Sampling filter time constant
+    t_meas   = {500e-9,'s'  };  % Delay for the post-turn-on current sample
+    tau_rel  = {100e-6,'s'  };  % Switching-heat release time constant
+    i_eps    = {1e-3,  'A'  };  % Smoothing current for the positive clip
+    v_eps    = {1e-3,  'V'  };  % Smoothing voltage for the positive clip
+    E_eps    = {1e-9,  'J'  };  % Smoothing energy for the positive clip
+end
+
+variables
+    v      = {0, 'V'};   % Collector-emitter voltage
+    i      = {0, 'A'};   % Collector current (total)
+    i_cond = {0, 'A'};   % Channel / on-state current component
+    i_tail = {0, 'A'};   % Drift-region tail current component
+    i_flt  = {0, 'A'};   % Filtered current, used for sampling
+    v_flt  = {0, 'V'};   % Filtered voltage, used for sampling
+    i_pos  = {0, 'A'};   % Positive part of i_flt
+    v_pos  = {0, 'V'};   % Positive part of v_flt
+    Eon_i  = {0, 'J'};   % Instantaneous turn-on energy estimate
+    Eoff_i = {0, 'J'};   % Instantaneous turn-off energy estimate (table)
+    Err_i  = {0, 'J'};   % Instantaneous diode Err estimate
+    Eoff_e = {0, 'J'};   % Turn-off energy after removing the tail part
+    E_rel  = {0, 'J'};   % Switching energy already released as heat
+    E_cnd  = {0, 'J'};   % Accumulated conduction energy
+    E_tl   = {0, 'J'};   % Accumulated tail energy
+    Q_h    = {0, 'W'};   % Heat flow into the thermal node
+end
+
+variables (Event = true)
+    V_blk  = {0,   'V'};   % Blocking voltage sampled before turn-on
+    I_tl0  = {0,   'A'};   % Tail current amplitude at the last turn-off
+    t_off  = {0,   's'};   % Time of the last turn-off
+    t_ev   = {1e9, 's'};   % Armed instant of the post-turn-on evaluation
+    E_on_a = {0,   'J'};   % Turn-on energy accumulator
+    E_of_a = {0,   'J'};   % Turn-off energy accumulator (table residual)
+    E_rr_a = {0,   'J'};   % Diode reverse-recovery accumulator
+end
+
+branches
+    i   : C.i -> E.i;
+    Q_h : H.Q -> *;
+end
+
+intermediates
+    % --- junction temperature and its effect on the static data -------
+    Tj    = H.T;
+    dT    = Tj - Tref;
+    V0_T  = Vce0*(1 + a_V*dT);
+    Rce_T = Rce*(1 + a_R*dT);
+    tau_T = tau_tail*(1 + a_tau*dT);
+    % --- operating-point scaling factors ------------------------------
+    fV_on  = (V_blk/Vref)^kv_on;
+    fV_off = (V_blk/Vref)^kv_off;
+    fV_rr  = (V_blk/Vref)^kv_rr;
+    fG_on  = (Rg/Rg_ref)^krg_on;
+    fG_off = (Rg/Rg_ref)^krg_off;
+    % --- analytic energy carried by the explicit tail -----------------
+    E_tl_est = V_blk*k_tail*i_pos*tau_T;
+    % --- switching power released as heat -----------------------------
+    P_sw = (E_on_a + E_of_a - E_rel)/tau_rel;
+end
+
+equations
+    assert(Rce > 0)
+    assert(R_off > 0)
+    assert(tau_tail > 0)
+    assert(tau_smp > 0)
+    assert(tau_rel > 0)
+    assert(t_meas > 5*tau_smp)   % the post-turn-on sample must be settled
+    assert(k_tail >= 0)
+    assert(Vref > 0)
+    assert(Rg > 0)
+
+    % ---- terminal relations -----------------------------------------
+    v == C.v - E.v;
+    i == i_cond + i_tail;
+
+    % ---- static characteristic --------------------------------------
+    % The inner test blocks reverse conduction: below the knee voltage the
+    % device falls back to the leakage branch, so the external antiparallel
+    % diode carries the negative current.
+    % If the compiler rejects the nested form, flatten it to
+    %   if (G > Vg_on) && (v > V0_T) ... elseif G > Vg_on ... else ... end
+    if G > Vg_on
+        if v > V0_T
+            i_cond == (v - V0_T)/Rce_T;
+        else
+            i_cond == v/R_off;
+        end
+    else
+        i_cond == v/R_off;
+    end
+
+    % ---- drift-region tail current ----------------------------------
+    if G > Vg_on
+        i_tail == 0;
+    else
+        i_tail == I_tl0*exp(-(time - t_off)/tau_T);
+    end
+
+    % ---- sampling filters and positive clips ------------------------
+    i_flt.der == (i - i_flt)/tau_smp;
+    v_flt.der == (v - v_flt)/tau_smp;
+    i_pos == 0.5*(i_flt + sqrt(i_flt*i_flt + i_eps*i_eps));
+    v_pos == 0.5*(v_flt + sqrt(v_flt*v_flt + v_eps*v_eps));
+
+    % ---- switching energies at the present operating point ----------
+    Eon_i  == tablelookup(i_tab, T_tab, Eon_tab,  i_pos, Tj, ...
+                          interpolation = linear, extrapolation = linear) ...
+              *fV_on*fG_on;
+    Eoff_i == tablelookup(i_tab, T_tab, Eoff_tab, i_pos, Tj, ...
+                          interpolation = linear, extrapolation = linear) ...
+              *fV_off*fG_off;
+    Err_i  == tablelookup(i_tab, T_tab, Err_tab,  i_pos, Tj, ...
+                          interpolation = linear, extrapolation = linear) ...
+              *fV_rr;
+    % table residual after removing the explicitly modelled tail energy
+    Eoff_e == 0.5*((Eoff_i - E_tl_est) ...
+              + sqrt((Eoff_i - E_tl_est)*(Eoff_i - E_tl_est) + E_eps*E_eps));
+
+    % ---- energy bookkeeping -----------------------------------------
+    E_cnd.der == v*i_cond;
+    E_tl.der  == v*i_tail;
+    E_rel.der == P_sw;
+
+    % ---- thermal port -----------------------------------------------
+    % Conduction, tail and switching losses heat the junction. Err belongs
+    % to the external diode and is deliberately excluded.
+    % Q_h is declared as flowing from H to the reference, so a negative
+    % value injects heat into H. Flip the sign if Tj moves the wrong way.
+    Q_h == -(v*i + P_sw);
+
+    % ---- outputs ----------------------------------------------------
+    P    == v*i + P_sw;
+    Ecnd == E_cnd;
+    Eon  == E_on_a;
+    Eoff == E_of_a + E_tl;
+    Err  == E_rr_a;
+end
+
+events
+    % Turn-on: latch the blocking voltage, then arm a delayed evaluation
+    % so that Eon and Err are taken with the commutated load current.
+    when edge(G > Vg_on)
+        V_blk = abs(v_pos);
+        t_ev  = time + t_meas;
+    end
+
+    when edge(time > t_ev)
+        E_on_a = E_on_a + Eon_i;
+        E_rr_a = E_rr_a + Err_i;
+        % t_ev   = {1e9, 's'};
+    end
+
+    % Turn-off: the current is still the load current, so it can be
+    % sampled directly.
+    when edge(G < Vg_on)
+        E_of_a = E_of_a + Eoff_e;
+        I_tl0  = k_tail*i_pos;
+        t_off  = time;
+    end
+end
+
+end
