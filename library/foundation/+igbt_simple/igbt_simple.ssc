@@ -57,7 +57,7 @@ parameters
     Rd       = { 0.05, 'mOhm' };  % Diode series resistance
     Goff     = { 1e-6, '1/Ohm'};  % Off-state conductance
     tau_s    = { 1,    'us'   };  % Sample&hold time constant (<< on-time)
-    tau_p    = { 200,  'us'   };  % Loss averaging time constant (2-5 x Tsw)
+    tau_p    = { 1000,  'us'  };  % Loss averaging time constant (2-5 x Tsw)
 end
 
 variables
