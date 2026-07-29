@@ -4,13 +4,21 @@ device_name = 'mitsubishi_CM1200DW-34T';
 device_type = 'Si-IGBT';
 
 Vth = 6.0;                                              % [V]
-Rce_on = 0.15e-3;                                       % [Ohm]
+Rce_on = 0.25e-3;                                       % [Ohm]
 Vce_sat = 2.40;                                         % [V]
-Vdon_diode = 2.75;                                      % [V]
-Rdon_diode = 0.15e-3;                                   % [Ohm]
-Eon = 140e-3;                                           % [J] @ Tj = 125°C
+Vdon_diode = 2.80;                                      % [V]
+Rdon_diode = 0.25e-3;                                   % [Ohm]
+
+% Rg = 0 Ohm
+% Eon = 140e-3;                                           % [J] @ Tj = 125°C
+% Eoff = 310e-3;                                          % [J] @ Tj = 125°C
+% Erec = 220e-3;                                          % [J] @ Tj = 125°C
+
+% Rg = 1 Ohm
+Eon = 420e-3;                                           % [J] @ Tj = 125°C
 Eoff = 310e-3;                                          % [J] @ Tj = 125°C
-Erec = 220e-3;                                          % [J] @ Tj = 125°C
+Erec = 140e-3;                                          % [J] @ Tj = 125°C
+
 Voff_sw_losses = 1000;                                   % [V]
 Ion_sw_losses = 1200;                                   % [A]
 JunctionTermalMass = 1.0;                               % [J/K]
