@@ -32,14 +32,14 @@ nodes
 end
 
 inputs
-    g = { 0, 'V' };                % G:left
+    g = { 0, 'V' };                       % G:left
 end
 
 outputs
-    Pt_flt  = { 0, 'W' };          % Pt:right
-    Pd_flt  = { 0, 'W' };          % Pd:right
-    it      = { 0, 'A' };          % ie:right
-    id      = { 0, 'A' };          % id:right
+    Pt = { 0, 'W' };                      % Pt:right
+    Pd = { 0, 'W' };                      % Pd:right
+    it = { 0, 'A' };                      % it:right
+    id = { 0, 'A' };                      % id:right
 end
 
 parameters
@@ -68,19 +68,17 @@ parameters
 end
 
 variables
-    i      = { 0, 'A' };           % terminal current, C -> E
-    v      = { 0, 'V' };           % terminal voltage, C - E
-    i_t    = { 0, 'A' };           % IGBT current
-    i_d    = { 0, 'A' };           % diode current
-    i_h    = { 0, 'A' };           % held IGBT commutated current
-    i_dh   = { 0, 'A' };           % held diode current before recovery
-    v_h    = { 0, 'V' };           % held blocking voltage
-    E_lpt  = { 0, 'J' };           % low-pass state, IGBT switching energy
-    E_lpd  = { 0, 'J' };           % low-pass state, diode switching energy
-    Qt     = { 0, 'W' };           % heat flow into the component through Ht
-    Qd     = { 0, 'W' };           % heat flow into the component through Hd
-    Pt     = { 0, 'W' };           % power flow into the component through Ht
-    Pd     = { 0, 'W' };           % power flow into the component through Hd
+    i     = { 0, 'A' };           % terminal current, C -> E
+    v     = { 0, 'V' };           % terminal voltage, C - E
+    i_t   = { 0, 'A' };           % IGBT current
+    i_d   = { 0, 'A' };           % diode current
+    i_h   = { 0, 'A' };           % held IGBT commutated current
+    i_dh  = { 0, 'A' };           % held diode current before recovery
+    v_h   = { 0, 'V' };           % held blocking voltage
+    E_lpt = { 0, 'J' };           % low-pass state, IGBT switching energy
+    E_lpd = { 0, 'J' };           % low-pass state, diode switching energy
+    Qt    = { 0, 'W' };           % heat flow into the component through Ht
+    Qd    = { 0, 'W' };           % heat flow into the component through Hd
 end
 
 variables (Event = true)
@@ -144,7 +142,7 @@ equations
     else
         i_dh.der == 0;
     end
-
+    
     it == i_t;
     id == i_d;
 
@@ -155,11 +153,8 @@ equations
     Pt == v*i_t + (E_t - E_lpt)/tau_p;
     Pd == v*i_d + (E_d - E_lpd)/tau_p;
 
-    Pt_flt.der == (Pt - Pt_flt)/tau_p;
-    Pd_flt.der == (Pd - Pd_flt)/tau_p;
-
-    Qt == -Pt_flt;
-    Qd == -Pd_flt;
+    Qt == -Pt;
+    Qd == -Pd;
 end
 
 events

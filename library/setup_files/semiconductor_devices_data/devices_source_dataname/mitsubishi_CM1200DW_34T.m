@@ -19,9 +19,9 @@ Eon = 420e-3;                                           % [J] @ Tj = 125°C
 Eoff = 310e-3;                                          % [J] @ Tj = 125°C
 Erec = 140e-3;                                          % [J] @ Tj = 125°C
 
-Voff_sw_losses = 1000;                                   % [V]
+Voff_sw_losses = 1000;                                  % [V]
 Ion_sw_losses = 1200;                                   % [A]
-JunctionTermalMass = 1.0;                               % [J/K]
+JunctionTermalMass = 0.65;                              % [J/K]
 Rtim = 1.0/1000;                                        % [K/W]
 Rth_switch_JC = 28.0/1000;                              % [K/W]
 Rth_switch_CH = 20.0/1000;                              % [K/W]
