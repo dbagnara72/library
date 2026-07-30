@@ -54,8 +54,8 @@ end
 intermediates
     % smooth-limited exponential argument (protects the solver only;
     % never active in normal operation)
-    xr  = 50 - vj/(N*Vt);
-    xe  = 50 - 0.5*(xr + sqrt(xr^2 + 1e-4));
+    xr  = 100 - vj/(N*Vt);
+    xe  = 100 - 0.5*(xr + sqrt(xr^2 + 1e-3));
     % smooth clamp of vj at FC*Vjp for the depletion charge
     xc  = FC*Vjp - vj;
     xcp = 0.5*(xc + sqrt(xc^2 + dsm^2));  % positive part of xc
