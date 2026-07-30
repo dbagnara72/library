@@ -42,9 +42,9 @@ variables
     i  = {0, 'A'};                                     % through
     v  = {0, 'V'};                                     % across
     vj = {0, 'V'};                                     % internal junction voltage
-    qE = {0, 'C'};                                     % injected junction charge
-    qM = {value = {0, 'C'}, priority = priority.high}; % mid-region stored charge
-    qj = {0, 'C'};                                     % depletion charge
+    qE = {value = {0, 'C'}, nominal = {1e-4, 'C'}};                           % injected junction charge
+    qM = {value = {0, 'C'}, nominal = {1e-4, 'C'}, priority = priority.high}; % mid-region stored charge
+    qj = {value = {0, 'C'}, nominal = {1e-5, 'C'}};                           % depletion charge
 end
 
 branches
@@ -64,6 +64,7 @@ intermediates
 end
 
 equations
+    v == p.v - n.v;
     v == vj + Rs*i;
 
     % Lauritzen-Ma lumped charge model

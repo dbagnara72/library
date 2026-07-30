@@ -60,16 +60,15 @@ variables
     igc  = {0, 'A'}; % Miller current
     ich  = {0, 'A'}; % channel current (MOS part)
     icap = {0, 'A'}; % Cce displacement current
-    itl  = {0, 'A'}; % tail current
+    itl  = {value = {0, 'A'}, priority = priority.high}; % tail current (state)
     % across
     vge  = {0,  'V'};
     vgc  = {0,  'V'};
     vce  = {10, 'V'};
-    % charges
-    qge  = {0, 'C'};
-    qgc  = {0, 'C'};
-    qce  = {0, 'C'};
-    qT   = {value = {0, 'C'}, priority = priority.high}; % tail charge
+    % charges (explicit nominal values: they scale the solver jacobian)
+    qge  = {value = {0, 'C'}, nominal = {1e-6, 'C'}};
+    qgc  = {value = {0, 'C'}, nominal = {1e-6, 'C'}};
+    qce  = {value = {0, 'C'}, nominal = {1e-6, 'C'}};
 end
 
 branches
@@ -118,9 +117,10 @@ equations
     icap == qce.der;
 
     % channel + tail (total on-state current = ich0; at turn-off the
-    % fraction ftail decays freely with tauT)
-    ich    == (1 - ftail)*ich0;
-    qT.der == ftail*ich0 - qT/tauT;
-    itl    == qT/tauT;
+    % fraction ftail decays freely with tauT). The tail state is kept
+    % directly in ampere (not as a charge) for jacobian conditioning.
+    % To disable the tail set ftail = 0; keep tauT > 0 in any case.
+    ich == (1 - ftail)*ich0;
+    tauT*itl.der == ftail*ich0 - itl;
 end
 end
