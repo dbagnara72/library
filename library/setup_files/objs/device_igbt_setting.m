@@ -37,6 +37,20 @@ classdef device_igbt_setting
         Rsnubber                % [Ohm]   
         Csnubber_zvs            % [F]
         Rsnubber_zvs            % [Ohm]   
+
+        Kp    = 123;            % [A/V^2] [FIT] see above (150C: 118, 25C: 151)
+        lam   = 0;              % [1/V]   output conductance not needed
+        Cge   = 150e-9;         % [F]     [FIT] Fig.9 pre-plateau slope: ~4 uC over
+        Cgc0  = 210e-9;         % [F]     [FIT] Fig.9 post-plateau slope minus Cge
+        Vjc   = 1;              % [V]     [FIT] with mc below reproduces the Miller
+        mc    = 0.87;           %         plateau charge: 3.07 uC over 3600 V
+        Cce0  = 100e-9;         % [F]     [EST] Coes not in datasheet. Gives
+        Vjo   = 1;              % [V]     Cce(3600V) ~ 1.7 nF; with diode Cj and
+        mo    = 0.5;            %         L_sigma = 168 nH -> f_ring ~ 8 MHz. Tune on
+        Rg    = 0.74;           % [ohm]   [DS] RGint
+        ftail = 0.25;           % [-]     [EST] tail energy ~ VCC*ftail*I0*tauT
+        tauT  = 3e-6;           % [s]     = 2.7 J, consistent with Eoff = 5.4 J
+        dsm   = 0.1;            % [V]     numerics
     end
         methods
             function obj = device_igbt_setting(device_name, device_type, Vth, Rce_on, Vce_sat, Vdon_diode, ...
