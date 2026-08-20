@@ -59,7 +59,7 @@ nodes
     p  = foundation.electrical.electrical;  % D:left
     n  = foundation.electrical.electrical;  % S:right
     Ht = foundation.thermal.thermal;        % Ht:left
-    Hd = foundation.thermal.thermal;        % Hd:left
+    Hd = foundation.thermal.thermal;        % Hd:right
 end
 
 inputs
@@ -69,6 +69,8 @@ end
 outputs
     Pt = {0, 'W'};                          % Pt:right
     Pd = {0, 'W'};                          % Pd:right
+    it = { 0, 'A' };                      % it:right
+    id = { 0, 'A' };                      % id:right
 end
 
 parameters
@@ -190,6 +192,9 @@ equations
 
     Qt == -Pt;
     Qd == -Pd;
+    
+    it == ich;
+    id == idio;
 end
 
 events
