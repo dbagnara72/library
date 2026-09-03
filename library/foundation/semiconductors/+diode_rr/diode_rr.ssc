@@ -15,8 +15,8 @@ component diode_rr
 %   If = Is*tau/(tau + TM)*(exp(Vf/(N*Vt)) - 1), plus Rs*If.
 
 nodes
-    p = foundation.electrical.electrical; % +
-    n = foundation.electrical.electrical; % -
+    p = foundation.electrical.electrical; % A
+    n = foundation.electrical.electrical; % K
 end
 
 annotations
